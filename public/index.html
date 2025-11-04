@@ -7,46 +7,43 @@
     <meta name="description" content="Generate professional HOA violation notices quickly with a simple, fast, static site." />
     <style>
       :root {
-        /* Vibrant brand palette */
-        --bg: #0b1020;            /* deep navy */
-        --fg: #e6edf3;            /* light text */
-        --muted: #9fb2c8;         /* muted text */
-        --brand-start: #7c3aed;   /* purple-600 */
-        --brand-end: #2563eb;     /* blue-600 */
-        --accent: #22c55e;        /* green-500 */
+        /* Light, simple, professional palette */
+        --bg: #f8fafc;            /* slate-50 */
+        --fg: #0f172a;            /* slate-900 */
+        --muted: #475569;         /* slate-600 */
+        --brand-start: #3b82f6;   /* blue-500 */
+        --brand-end: #06b6d4;     /* cyan-500 */
+        --accent: #16a34a;        /* green-600 */
         --accent-2: #f59e0b;      /* amber-500 */
-        --card: #0f172a;          /* slate-900 */
-        --border: #1e293b;        /* slate-800 */
+        --card: #ffffff;          /* white */
+        --border: #e5e7eb;        /* gray-200 */
       }
       * { box-sizing: border-box; }
       html, body { height: 100%; }
-      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: radial-gradient(1200px 600px at 10% -20%, rgba(124,58,237,0.20), transparent 60%), radial-gradient(900px 500px at 90% 10%, rgba(37,99,235,0.18), transparent 60%), var(--bg); color: var(--fg); }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--fg); }
       a { color: var(--fg); text-decoration: none; }
       .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-      header { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); background: rgba(11,16,32,0.70); border-bottom: 1px solid var(--border); }
+      header { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(6px); background: rgba(255,255,255,0.85); border-bottom: 1px solid var(--border); }
       header .wrap { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
-      .brand {
-        font-weight: 800; letter-spacing: .2px;
-        background: linear-gradient(90deg, var(--brand-start), var(--brand-end));
-        -webkit-background-clip: text; background-clip: text; color: transparent;
-      }
+      .brand { font-weight: 800; letter-spacing: .2px; background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); -webkit-background-clip: text; background-clip: text; color: transparent; }
       nav a { margin-left: 18px; color: var(--muted); }
-      nav a:hover { color: #fff; }
-      .hero { padding: 90px 0 54px; text-align: center; }
-      .hero h1 { font-size: 48px; margin: 0 0 12px; }
+      nav a:hover { color: #000; }
+      .hero { padding: 90px 0 54px; text-align: center; background: linear-gradient(180deg, #eef2ff 0%, #e6fffb 100%); border-bottom: 1px solid var(--border); }
+      .hero h1 { font-size: 46px; margin: 0 0 12px; }
       .hero h1 .grad { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); -webkit-background-clip: text; background-clip: text; color: transparent; }
       .hero p { color: var(--muted); font-size: 18px; margin: 0 0 26px; }
-      .cta { display: inline-block; background: linear-gradient(90deg, #ffffff, #f7f9fc); color: #0b1020; padding: 12px 18px; border-radius: 12px; font-weight: 700; border: 1px solid #e5e7eb; box-shadow: 0 10px 24px rgba(124,58,237,0.18); }
-      .cta:hover { background: #eef2ff; }
+      .cta { display: inline-block; background: linear-gradient(90deg, #ffffff, #f7f9fc); color: #0b1020; padding: 12px 18px; border-radius: 12px; font-weight: 700; border: 1px solid var(--border); box-shadow: 0 10px 24px rgba(6,182,212,0.18); }
+      .cta.secondary { background: #ffffff; color: var(--fg); border: 1px solid var(--border); box-shadow: none; margin-left: 12px; }
       .section { padding: 42px 0; }
       .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-      .card { background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(12,18,30,0.96)); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+      .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
       .card h3 { margin: 0 0 10px; font-size: 18px; }
       .card p { margin: 0; color: var(--muted); }
-      .chip { display: inline-block; font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+      .chip { display: inline-block; font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: #fafafa; }
       .accent { color: var(--accent); }
       .accent-2 { color: var(--accent-2); }
-      footer { border-top: 1px solid var(--border); margin-top: 48px; padding: 24px 0; color: var(--muted); }
+      .banner { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 10px 24px rgba(59,130,246,0.24); }
+      footer { border-top: 1px solid var(--border); margin-top: 48px; padding: 24px 0; color: var(--muted); background: #fff; }
       @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } .hero h1 { font-size: 40px; } }
       @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .hero h1 { font-size: 34px; } }
     </style>
@@ -65,9 +62,10 @@
 
     <main class="container">
       <section class="hero">
-        <h1><span class="grad">Generate HOA Violation Notices Fast</span></h1>
-        <p>Beautiful, fast, and reliable. Pure static HTML — loads instantly anywhere.</p>
-        <a class="cta" href="#get-started">Try It Now</a>
+        <h1><span class="grad">Simple · Elegant · Built for HOA Pain Points</span></h1>
+        <p>Reduce manual drafting, ensure compliance, and unify wording across your HOA — with a clean, lightweight site.</p>
+        <a class="cta" href="#get-started">Start Free</a>
+        <a class="cta secondary" href="#pain-points">See Pain Points</a>
       </section>
 
       <section id="features" class="section">
@@ -105,12 +103,54 @@
         </div>
       </section>
 
+      <section id="pain-points" class="section">
+        <div class="container">
+          <h2 style="text-align:center; margin:0 0 18px;">Industry Pain Points</h2>
+          <p style="text-align:center; color:var(--muted); margin:0 0 24px;">Common blockers for HOA boards and property managers.</p>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <h3>Inconsistent Wording</h3>
+            <p>Notices vary by person, causing confusion and weak enforcement.</p>
+          </div>
+          <div class="card">
+            <h3>Legal Compliance Risk</h3>
+            <p>Templates don’t clearly cite CC&Rs or cure windows, creating exposure.</p>
+          </div>
+          <div class="card">
+            <h3>Slow Manual Drafting</h3>
+            <p>Formatting, clause selection, and manual edits consume valuable time.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="solution" class="section">
+        <div class="container">
+          <h2 style="text-align:center; margin:0 0 18px;">Our Solution</h2>
+          <p style="text-align:center; color:var(--muted); margin:0 0 24px;">A light, fast site delivering consistent, compliant notices.</p>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <h3 class="accent">Consistent Templates</h3>
+            <p>Curated wording aligned to CC&Rs with neutral, professional tone.</p>
+          </div>
+          <div class="card">
+            <h3 class="accent">Compliance Checkpoints</h3>
+            <p>Explicit cure dates, references, and sample phrasing included.</p>
+          </div>
+          <div class="card">
+            <h3 class="accent">Speed + Clarity</h3>
+            <p>Preset flows produce a polished notice in under a minute.</p>
+          </div>
+        </div>
+      </section>
+
       <section id="get-started" class="section">
-        <div class="card">
-          <h3>Get Started</h3>
-          <p>Open any feature page above and begin drafting. Built for reliability and speed with colorful, modern visuals.</p>
-          <p class="accent">Tip:</p>
-          <p class="accent-2">Use the links above to explore features — no sign‑in needed.</p>
+        <div class="banner">
+          <h3 style="margin:0 0 8px;">Get Started</h3>
+          <p style="margin:0 0 12px;">Open any feature page and begin drafting. No sign‑in, no friction — built purely for speed.</p>
+          <a class="cta" href="fast-generation.html">Create a Notice</a>
+          <a class="cta secondary" href="legal-compliance.html">Check Compliance</a>
         </div>
       </section>
     </main>
