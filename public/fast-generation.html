@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fast Generation | HOAWriterAI</title>
-    <meta name="description" content="Create clear, compliant HOA violation notices in minutes." />
+    <title>Generate Now | HOAWriterAI</title>
+    <meta name="description" content="Create clear, compliant HOA violation notices with a simple form and instant preview." />
     <link rel="canonical" href="/fast-generation.html" />
     <style>
       :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569}
@@ -12,13 +12,20 @@
       .container{max-width:1100px;margin:0 auto;padding:24px}
       .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);z-index:50}
       .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
-      .brand{background:linear-gradient(90deg,#2563eb,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;text-decoration:none}
+      .brand{background:linear-gradient(90deg,#2563eb,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;text-decoration:none}
       .link{color:#374151;margin-left:16px;text-decoration:none}
-      .hero{padding:56px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
-      h1{font-size:40px;margin:0 0 12px}
+      .hero{padding:40px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
+      h1{font-size:36px;margin:0 0 10px}
       .sub{color:var(--muted)}
-      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:20px;margin-top:20px}
-      .btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--fg);border:1px solid var(--border);border-radius:10px;padding:10px 16px;text-decoration:none;box-shadow:0 6px 16px rgba(59,130,246,.15)}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:18px}
+      label{display:block;margin:10px 0 6px;color:#334155;font-weight:600}
+      input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+      textarea{min-height:80px}
+      .actions{display:flex;gap:10px;margin-top:12px}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 16px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px rgba(37,99,235,.2)}
+      .btn.secondary{background:#fff;color:#0f172a;border:1px solid var(--border);box-shadow:0 6px 16px rgba(59,130,246,.12)}
+      pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
     </style>
   </head>
   <body>
@@ -34,22 +41,117 @@
     </header>
     <section class="hero">
       <div class="container">
-        <h1>Fast Generation</h1>
-        <p class="sub">Create clear, structured notices in minutes — export to PDF, DOC, or email.</p>
+        <h1>Generate a Notice</h1>
+        <p class="sub">Fill essentials, preview instantly, then copy or print.</p>
       </div>
     </section>
     <main class="container">
-      <div class="card">
-        <h2 style="margin:0 0 8px">Steps</h2>
-        <ol style="margin:0 0 0 18px">
-          <li>Select violation type and community policy.</li>
-          <li>Fill essentials: address, date, reference, deadline.</li>
-          <li>Generate and export — consistent format and tone.</li>
-        </ol>
-      </div>
-      <div class="card">
-        <a class="btn" href="index.html">Back to Home</a>
+      <div class="grid">
+        <div class="card">
+          <form id="noticeForm">
+            <label for="address">Property Address</label>
+            <input id="address" placeholder="123 Oak St, Unit 5" />
+
+            <label for="date">Date</label>
+            <input id="date" type="date" />
+
+            <label for="type">Violation Type</label>
+            <select id="type">
+              <option value="Landscaping">Landscaping</option>
+              <option value="Parking">Parking</option>
+              <option value="Architectural Change">Architectural Change</option>
+            </select>
+
+            <label for="ccrs">CC&Rs Reference</label>
+            <input id="ccrs" placeholder="§4.2" />
+
+            <label for="deadline">Grace Days</label>
+            <input id="deadline" type="number" min="1" value="7" />
+
+            <label for="tone">Tone</label>
+            <select id="tone">
+              <option value="Formal">Formal</option>
+              <option value="Friendly">Friendly</option>
+            </select>
+
+            <label for="notes">Additional Notes (optional)</label>
+            <textarea id="notes" placeholder="e.g., please remove items from driveway." ></textarea>
+
+            <div class="actions">
+              <button type="button" class="btn" id="btnGenerate">Generate Preview</button>
+              <button type="button" class="btn secondary" id="btnCopy">Copy Text</button>
+              <button type="button" class="btn secondary" id="btnPrint">Print</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 10px">Preview</h3>
+          <pre id="preview">Fill the form and click "Generate Preview".</pre>
+        </div>
       </div>
     </main>
+
+    <script>
+      // Default date to today
+      (function(){
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,'0');
+        const dd = String(d.getDate()).padStart(2,'0');
+        const dateEl = document.getElementById('date');
+        if(dateEl && !dateEl.value){ dateEl.value = `${yyyy}-${mm}-${dd}`; }
+      })();
+
+      const typeTemplates = {
+        'Landscaping': 'Please restore landscaping to community standards.',
+        'Parking': 'Please follow the community parking rules and remove the vehicle.',
+        'Architectural Change': 'Please submit the architectural change request per community policy.'
+      };
+
+      function buildText(values){
+        const toneMap = {
+          Formal: 'This notice is issued in accordance with community policies.',
+          Friendly: 'We appreciate your prompt attention to this matter.'
+        };
+        return `Subject: Notice of Violation — ${values.type}\n` +
+               `Property: ${values.address}\n` +
+               `Date: ${values.date}\n\n` +
+               `Per CC&Rs ${values.ccrs}, ${typeTemplates[values.type] || ''}` + (values.notes? ` ${values.notes}`:'') + `\n` +
+               `Deadline: ${values.deadline} calendar days from this notice.\n` +
+               `${toneMap[values.tone]} If unresolved, a follow-up notice and fine may apply.\n\n` +
+               `Regards,\nHOA Compliance Team`;
+      }
+
+      function getValues(){
+        return {
+          address: document.getElementById('address').value.trim(),
+          date: document.getElementById('date').value,
+          type: document.getElementById('type').value,
+          ccrs: document.getElementById('ccrs').value.trim(),
+          deadline: document.getElementById('deadline').value,
+          tone: document.getElementById('tone').value,
+          notes: document.getElementById('notes').value.trim()
+        };
+      }
+
+      document.getElementById('btnGenerate').addEventListener('click', function(){
+        const txt = buildText(getValues());
+        document.getElementById('preview').textContent = txt;
+      });
+
+      document.getElementById('btnCopy').addEventListener('click', async function(){
+        const txt = document.getElementById('preview').textContent;
+        try { await navigator.clipboard.writeText(txt); this.textContent = 'Copied'; setTimeout(()=>this.textContent='Copy Text',1200);} catch(e){ alert('Copy failed'); }
+      });
+
+      document.getElementById('btnPrint').addEventListener('click', function(){
+        const win = window.open('', '_blank');
+        win.document.write(`<pre style="font-family:Consolas,monospace">${document.getElementById('preview').textContent.replace(/</g,'&lt;')}</pre>`);
+        win.document.close();
+        win.focus();
+        win.print();
+      });
+    </script>
   </body>
 </html>
