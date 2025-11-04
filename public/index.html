@@ -1,121 +1,315 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HOAWriterAI — Instant HOA Violation Notices</title>
-    <meta name="description" content="Generate HOA violation notices instantly: standardized wording, clear policies and deadlines, export‑ready." />
+    <title>HOAWriterAI — Generate HOA Violation Notices in 60 Seconds</title>
+    <meta name="description" content="Generate professional HOA violation notices in 60 seconds to improve community management efficiency and ensure legal compliance." />
     <style>
-      :root {
-        --bg: #f7fafc;            /* light background */
-        --fg: #0f172a;            /* text */
-        --muted: #475569;         /* secondary text */
-        --brand-start: #2563eb;   /* blue */
-        --brand-end: #7c3aed;     /* purple */
-        --card: #ffffff;          /* card */
-        --border: #e5e7eb;        /* border */
+      :root{
+        --bg:#ffffff;
+        --fg:#1f2937;
+        --muted:#6b7280;
+        --primary:#5b7cff;
+        --primary-600:#4c66d6;
+        --accent:#ff6b6b;
+        --surface:#f4f6fb;
+        --border:#e5e7eb;
       }
       *{box-sizing:border-box}
-      html,body{height:100%}
-      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:var(--bg); color:var(--fg)}
-      a{text-decoration:none;color:var(--fg)}
-      .container{max-width:1200px;margin:0 auto;padding:0 24px}
-      header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
-      header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-      .brand{font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,var(--brand-start),var(--brand-end));-webkit-background-clip:text;background-clip:text;color:transparent}
-      nav a{margin-left:18px;color:var(--muted)}
-      nav a:hover{color:#000}
-      .hero{padding:84px 0 54px;text-align:center;background:radial-gradient(1000px 400px at 50% -50%, rgba(37,99,235,.08), transparent), linear-gradient(180deg,#eef2ff 0%, #e8fbff 100%);border-bottom:1px solid var(--border)}
-      .hero h1{font-size:48px;margin:0 0 12px;color:var(--fg)}
-      .hero p{color:var(--muted);font-size:18px;margin:0 0 26px}
-      .cta{display:inline-block;background:linear-gradient(90deg,var(--brand-start),var(--brand-end));color:#fff;padding:12px 20px;border-radius:14px;font-weight:800;box-shadow:0 12px 28px rgba(37,99,235,.25)}
-      .section{padding:42px 0}
-      .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-      .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 8px 22px rgba(0,0,0,.06)}
-      .card h3{margin:0 0 10px;font-size:18px}
-      .card p{margin:0;color:var(--muted)}
-      .badges{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-      .badge{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;color:var(--muted);box-shadow:0 6px 18px rgba(0,0,0,.06)}
-      .preview{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 8px 22px rgba(0,0,0,.06)}
-      .preview pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
-      .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-      .step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-      footer{border-top:1px solid var(--border);margin-top:48px;padding:24px 0;color:var(--muted);background:#fff}
-      @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:40px}}
-      @media (max-width:600px){.grid{grid-template-columns:1fr}.hero h1{font-size:34px}}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:var(--bg)}
+      a{text-decoration:none;color:inherit}
+      .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:10}
+      .brand{font-weight:700;letter-spacing:.2px}
+      .nav{display:flex;gap:14px}
+      .link{color:var(--muted)}
+      .hero{padding:64px 22px;background:linear-gradient(135deg,#6e85ff,#6d67f3 60%,#9f79ff);color:#fff;text-align:center}
+      .hero h1{font-size:40px;line-height:1.2;margin:0 0 10px}
+      .hero .sub{font-size:18px;opacity:.95;margin:0 0 24px}
+      .cta{display:inline-block;background:var(--accent);color:#fff;padding:12px 18px;border-radius:8px;font-weight:600}
+      .section{padding:26px 22px;max-width:1080px;margin:0 auto}
+      .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+      .group{display:grid;gap:8px}
+      label{font-weight:600;font-size:13px;color:var(--muted)}
+      input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:14px}
+      textarea{min-height:110px;resize:vertical}
+      .btnrow{display:flex;gap:10px;margin-top:6px}
+      .btn{background:var(--primary);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+      .btn.secondary{background:#fff;color:var(--fg);border:1px solid var(--border)}
+      pre{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:13px;line-height:1.5;white-space:pre-wrap}
+      .footer{padding:22px;color:var(--muted);text-align:center;border-top:1px solid var(--border);margin-top:26px}
+      @media (max-width:900px){.grid{grid-template-columns:1fr}}
     </style>
   </head>
   <body>
-    <header>
-      <div class="container wrap">
-        <strong class="brand">HOAWriterAI</strong>
-        <nav>
-          <a href="#features">Features</a>
-          <a href="fast-generation.html">Generate Now</a>
-          <a href="multilingual-support.html">Multilingual</a>
-        </nav>
-      </div>
+    <header class="topbar">
+      <div class="brand">HOAWriterAI</div>
+      <nav class="nav">
+        <a class="link" href="#tool">Tool</a>
+        <a class="link" href="fast-generation.html">Standalone Generator</a>
+        <button id="langToggle" class="link" style="background:none;border:none;padding:0 6px;cursor:pointer">中文</button>
+      </nav>
     </header>
 
-    <main class="container">
-      <section class="hero">
-        <h1>Instant HOA Violation Notices</h1>
-        <p>Standardized wording, clear CC&Rs references and deadlines — export ready.</p>
-        <a class="cta" href="fast-generation.html">Generate Notice</a>
-      </section>
+    <section class="hero">
+      <h1>HOAWriterAI</h1>
+      <p class="sub">Generate professional HOA violation notices in 60 seconds. Improve efficiency and ensure legal compliance.</p>
+      <a class="cta" href="#tool">Start Now</a>
+    </section>
 
-      <section id="features" class="section">
+    <!-- Features -->
+    <section class="section" id="features">
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Legal Compliance</h3>
+          <p class="sub" style="color:var(--muted);margin:0">Generate notices aligned with CC&Rs and consistent wording.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Speed & Consistency</h3>
+          <p class="sub" style="color:var(--muted);margin:0">60‑second creation with standardized templates and tone control.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Record Ready</h3>
+          <p class="sub" style="color:var(--muted);margin:0">Copy, print, or save as PDF for archival and mailings.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how">
+      <div class="card">
+        <ol style="margin:0;padding-left:18px;color:var(--muted)">
+          <li>Enter property, violation type, CC&Rs reference, and grace days.</li>
+          <li>Choose tone, add notes, then generate the preview.</li>
+          <li>Copy, print, or save as PDF for delivery and records.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="tool">
+      <div class="card">
         <div class="grid">
-          <a class="card" href="fast-generation.html">
-            <h3>⚡ Fast Generation</h3>
-            <p>Create a clear, compliant notice in 60 seconds.</p>
-          </a>
-          <a class="card" href="legal-compliance.html">
-            <h3>✅ Legal Compliance</h3>
-            <p>CC&Rs references and deadlines stated plainly.</p>
-          </a>
-          <a class="card" href="multilingual-support.html">
-            <h3>🌐 Multilingual Support</h3>
-            <p>Unified format with multilingual options. One‑click export.</p>
-          </a>
-      </div>
-      </section>
-      <section class="section">
-        <div class="badges">
-          <div class="badge">Policy‑aligned templates</div>
-          <div class="badge">Privacy‑respecting generation</div>
-          <div class="badge">Export: PDF / DOC / Email</div>
+          <div class="group">
+            <h3 style="margin:0 0 10px">Fill Details</h3>
+            <label for="hoaName">HOA Name</label>
+            <input id="hoaName" placeholder="e.g., Evergreen Community HOA" />
+
+            <label for="hoaAddress">HOA Address</label>
+            <input id="hoaAddress" placeholder="e.g., 456 Maple Ave, Suite 200" />
+
+            <label for="hoaPhone">Phone</label>
+            <input id="hoaPhone" placeholder="e.g., (555) 123-4567" />
+
+            <label for="hoaEmail">Email</label>
+            <input id="hoaEmail" placeholder="e.g., compliance@evergreenhoa.org" />
+            <label for="address">Property Address</label>
+            <input id="address" placeholder="e.g., 123 Oak St, Unit 5" />
+
+            <label for="date">Date</label>
+            <input id="date" type="date" />
+
+            <label for="type">Violation Type</label>
+            <select id="type">
+              <option value="Landscaping">Landscaping</option>
+              <option value="Parking">Parking</option>
+              <option value="Architectural Change">Architectural Change</option>
+              <option value="Trash Bin Visibility">Trash Bin Visibility</option>
+              <option value="Fence Maintenance">Fence Maintenance</option>
+              <option value="Signage Noncompliance">Signage Noncompliance</option>
+              <option value="Common Area Misuse">Common Area Misuse</option>
+              <option value="Noise">Noise</option>
+            </select>
+
+            <label for="ccrs">CC&Rs Reference</label>
+            <input id="ccrs" placeholder="e.g., §4.2" />
+
+            <label for="deadline">Grace Days</label>
+            <input id="deadline" type="number" min="1" value="7" />
+
+            <label for="tone">Tone</label>
+            <select id="tone">
+              <option value="Formal">Formal</option>
+              <option value="Friendly">Friendly</option>
+            </select>
+
+            <label for="notes">Additional Notes (optional)</label>
+            <textarea id="notes" placeholder="e.g., please avoid placing items on driveway."></textarea>
+
+            <div class="btnrow">
+              <button type="button" class="btn" id="btnGenerate">Generate Preview</button>
+              <button type="button" class="btn secondary" id="btnCopy">Copy Text</button>
+              <button type="button" class="btn secondary" id="btnPrint">Print</button>
+              <button type="button" class="btn secondary" id="btnPDF">Download PDF</button>
+            </div>
+          </div>
+          <div class="group">
+            <h3 style="margin:0 0 10px">Preview</h3>
+            <pre id="preview">Fill the fields on the left, then click "Generate Preview".</pre>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="section">
-        <div class="preview">
-          <h3 style="margin:0 0 10px">Sample Notice (excerpt)</h3>
-          <pre>Subject: Notice of Violation — Landscaping
-Property: 123 Oak St, Unit 5
-Date: Apr 15, 2025
+    <footer class="footer">© HOAWriterAI — Community Compliance Assistant</footer>
 
-Per CC&Rs §4.2, please restore landscaping to community standards.
-Deadline: 7 calendar days from this notice.
-If unresolved, a follow‑up notice and fine may apply.
+    <script>
+      // Prefill today's date
+      (function(){
+        const d = new Date();
+        const iso = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+        const dateInput = document.getElementById('date');
+        if(dateInput && !dateInput.value) dateInput.value = iso;
+      })();
+
+      function collect(){
+        return {
+          hoaName: document.getElementById('hoaName').value.trim(),
+          hoaAddress: document.getElementById('hoaAddress').value.trim(),
+          hoaPhone: document.getElementById('hoaPhone').value.trim(),
+          hoaEmail: document.getElementById('hoaEmail').value.trim(),
+          address: document.getElementById('address').value.trim(),
+          date: document.getElementById('date').value,
+          type: document.getElementById('type').value,
+          ccrs: document.getElementById('ccrs').value.trim(),
+          deadline: document.getElementById('deadline').value,
+          tone: document.getElementById('tone').value,
+          notes: document.getElementById('notes').value.trim()
+        };
+      }
+
+      function buildNotice(values){
+        const typeTemplates = {
+          'Landscaping': 'Please restore landscaping to community standards.',
+          'Parking': 'Please follow community parking rules and remove the vehicle.',
+          'Architectural Change': 'Please submit the architectural change request per community policy.',
+          'Trash Bin Visibility': 'Please store trash/recycle bins out of public view except on collection day.',
+          'Fence Maintenance': 'Please repair or maintain fencing to meet community standards.',
+          'Signage Noncompliance': 'Please remove or replace signage that does not meet HOA rules.',
+          'Common Area Misuse': 'Please refrain from unauthorized use of common areas per guidelines.',
+          'Noise': 'Please reduce noise levels in accordance with quiet hours and community policy.'
+        };
+        const toneMap = {
+          Formal: 'This notice is issued in accordance with community policies.',
+          Friendly: 'We appreciate your prompt attention to this matter.'
+        };
+        const header = `${values.hoaName ? values.hoaName + '\n' : ''}` +
+                       `${values.hoaAddress ? values.hoaAddress + '\n' : ''}` +
+                       `${values.hoaPhone ? 'Phone: ' + values.hoaPhone + '\n' : ''}` +
+                       `${values.hoaEmail ? 'Email: ' + values.hoaEmail + '\n' : ''}`;
+        const compliance = `\nAppeal & Compliance: You may contact the HOA within ${Math.max(3, Math.min(14, parseInt(values.deadline)||7))} days to discuss or appeal. Continued noncompliance may result in fines or further action per CC&Rs.`;
+        return (
+`${header ? header + '\n' : ''}Subject: Notice of Violation — ${values.type}
+Property: ${values.address}
+Date: ${values.date}
+
+Per CC&Rs ${values.ccrs}, ${typeTemplates[values.type] || ''}${values.notes? ` ${values.notes}`:''}
+Deadline: ${values.deadline} calendar days from this notice.
+${toneMap[values.tone]} If unresolved, a follow-up notice and fine may apply.${compliance}
+
 Regards,
-HOA Compliance Team</pre>
-        </div>
-      </section>
+HOA Compliance Team`);
+      }
 
-      <section class="section">
-        <div class="steps">
-          <div class="step"><strong>1. Select</strong><br/><span class="sub">Violation type & policy</span></div>
-          <div class="step"><strong>2. Fill</strong><br/><span class="sub">Address, date & deadline</span></div>
-          <div class="step"><strong>3. Export</strong><br/><span class="sub">PDF / DOC / Email</span></div>
-        </div>
-      </section>
-    </main>
+      document.getElementById('btnGenerate').addEventListener('click', ()=>{
+        const values = collect();
+        document.getElementById('preview').textContent = buildNotice(values);
+      });
+      document.getElementById('btnCopy').addEventListener('click', async function(){
+        const txt = document.getElementById('preview').textContent;
+        try { await navigator.clipboard.writeText(txt); this.textContent = 'Copied'; setTimeout(()=>this.textContent='Copy Text',1200);} catch(e){ alert('Copy failed'); }
+      });
+      document.getElementById('btnPrint').addEventListener('click', ()=>{
+        const w = window.open('', '_blank');
+        const content = document.getElementById('preview').textContent.replace(/\n/g,'<br/>');
+        w.document.write(`<style>@page{size:Letter;margin:20mm}body{font-family:Segoe UI, Roboto, Arial}</style><pre style="white-space:pre-wrap;line-height:1.5">${content}</pre>`);
+        w.document.close();
+        w.focus();
+        w.print();
+      });
 
-    <footer>
-      <div class="container">
-        © 2025 HOAWriterAI · <a href="security-reliability.html">Security</a> · <a href="legal-compliance.html">Compliance</a>
-      </div>
-    </footer>
+      // Download PDF (print dialog with Letter size)
+      document.getElementById('btnPDF').addEventListener('click', ()=>{
+        const values = collect();
+        const text = buildNotice(values).replace(/\n/g,'<br/>');
+        const w = window.open('', '_blank');
+        w.document.write(`<style>@page{size:Letter;margin:18mm}body{font-family:Segoe UI, Roboto, Arial}</style><pre style="white-space:pre-wrap;line-height:1.5">${text}</pre>`);
+        w.document.close();
+        w.focus();
+        w.print();
+      });
+
+      // Language toggle (EN/中文)
+      (function(){
+        const t = {
+          en: {
+            heroTitle: 'HOAWriterAI',
+            heroSub: 'Generate professional HOA violation notices in 60 seconds. Improve efficiency and ensure legal compliance.',
+            start: 'Start Now',
+            tool: 'Tool',
+            standalone: 'Standalone Generator',
+            fill: 'Fill Details',
+            labels: {
+              hoaName: 'HOA Name', hoaAddress: 'HOA Address', hoaPhone: 'Phone', hoaEmail: 'Email',
+              address: 'Property Address', date: 'Date', type: 'Violation Type', ccrs: 'CC&Rs Reference',
+              deadline: 'Grace Days', tone: 'Tone', notes: 'Additional Notes (optional)'
+            },
+            toneFormal: 'Formal', toneFriendly: 'Friendly',
+            generate: 'Generate Preview', copy: 'Copy Text', print: 'Print', pdf: 'Download PDF',
+            preview: 'Preview'
+          },
+          zh: {
+            heroTitle: 'HOAWriterAI',
+            heroSub: '60秒生成专业HOA违规通知，提高物业管理效率，确保法律合规性。',
+            start: '立即开始使用',
+            tool: '工具',
+            standalone: '独立生成页',
+            fill: '填写信息',
+            labels: {
+              hoaName: 'HOA 名称', hoaAddress: 'HOA 地址', hoaPhone: '电话', hoaEmail: '邮箱',
+              address: '物业地址', date: '日期', type: '违规类型', ccrs: 'CC&Rs 条款编号',
+              deadline: '整改宽限天数', tone: '语气', notes: '备注（可选）'
+            },
+            toneFormal: '正式', toneFriendly: '友好',
+            generate: '生成预览', copy: '复制文本', print: '打印', pdf: '下载 PDF',
+            preview: '预览'
+          }
+        };
+        function setLang(lang){
+          const L = t[lang];
+          document.querySelector('.hero h1').textContent = L.heroTitle;
+          document.querySelector('.hero .sub').textContent = L.heroSub;
+          document.querySelector('.hero .cta').textContent = L.start;
+          const navLinks = document.querySelectorAll('.nav .link');
+          if(navLinks[0]) navLinks[0].textContent = L.tool;
+          if(navLinks[1]) navLinks[1].textContent = L.standalone;
+          document.querySelector('h3').textContent = L.fill;
+          const map = L.labels;
+          document.querySelector('label[for="hoaName"]').textContent = map.hoaName;
+          document.querySelector('label[for="hoaAddress"]').textContent = map.hoaAddress;
+          document.querySelector('label[for="hoaPhone"]').textContent = map.hoaPhone;
+          document.querySelector('label[for="hoaEmail"]').textContent = map.hoaEmail;
+          document.querySelector('label[for="address"]').textContent = map.address;
+          document.querySelector('label[for="date"]').textContent = map.date;
+          document.querySelector('label[for="type"]').textContent = map.type;
+          document.querySelector('label[for="ccrs"]').textContent = map.ccrs;
+          document.querySelector('label[for="deadline"]').textContent = map.deadline;
+          document.querySelector('label[for="tone"]').textContent = map.tone;
+          document.querySelector('label[for="notes"]').textContent = map.notes;
+          document.getElementById('btnGenerate').textContent = L.generate;
+          document.getElementById('btnCopy').textContent = L.copy;
+          document.getElementById('btnPrint').textContent = L.print;
+          document.getElementById('btnPDF').textContent = L.pdf;
+          document.querySelector('#tool .group + .group h3').textContent = L.preview;
+          document.getElementById('langToggle').textContent = (lang === 'en' ? '中文' : 'EN');
+        }
+        let current = 'en';
+        setLang(current);
+        document.getElementById('langToggle').addEventListener('click', ()=>{
+          current = (current === 'en' ? 'zh' : 'en');
+          setLang(current);
+        });
+      })();
+    </script>
   </body>
 </html>
