@@ -34,6 +34,12 @@
       .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 8px 22px rgba(0,0,0,.06)}
       .card h3{margin:0 0 10px;font-size:18px}
       .card p{margin:0;color:var(--muted)}
+      .badges{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+      .badge{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;color:var(--muted);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+      .preview{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 8px 22px rgba(0,0,0,.06)}
+      .preview pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
+      .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+      .step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
       footer{border-top:1px solid var(--border);margin-top:48px;padding:24px 0;color:var(--muted);background:#fff}
       @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:40px}}
       @media (max-width:600px){.grid{grid-template-columns:1fr}.hero h1{font-size:34px}}
@@ -73,6 +79,36 @@
             <p>Unified format with multilingual options. One‑click export.</p>
           </a>
       </div>
+      </section>
+      <section class="section">
+        <div class="badges">
+          <div class="badge">Policy‑aligned templates</div>
+          <div class="badge">Privacy‑respecting generation</div>
+          <div class="badge">Export: PDF / DOC / Email</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="preview">
+          <h3 style="margin:0 0 10px">Sample Notice (excerpt)</h3>
+          <pre>Subject: Notice of Violation — Landscaping
+Property: 123 Oak St, Unit 5
+Date: Apr 15, 2025
+
+Per CC&Rs §4.2, please restore landscaping to community standards.
+Deadline: 7 calendar days from this notice.
+If unresolved, a follow‑up notice and fine may apply.
+Regards,
+HOA Compliance Team</pre>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="steps">
+          <div class="step"><strong>1. Select</strong><br/><span class="sub">Violation type & policy</span></div>
+          <div class="step"><strong>2. Fill</strong><br/><span class="sub">Address, date & deadline</span></div>
+          <div class="step"><strong>3. Export</strong><br/><span class="sub">PDF / DOC / Email</span></div>
+        </div>
       </section>
     </main>
 
