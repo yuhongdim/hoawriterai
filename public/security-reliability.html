@@ -4,64 +4,52 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Security & Reliability | HOAWriterAI</title>
-    <meta name="description" content="Use secure workflows and optional server proxies to protect data and API keys. Fall back to local generation when needed." />
-    <meta name="keywords" content="HOA security, server proxy, API key safety, reliability, local generation" />
+    <meta name="description" content="Recommended practices: server‑side key storage, strict permissions, retention policy; local generation fallback." />
     <link rel="canonical" href="/security-reliability.html" />
-    <style>html{scroll-behavior:smooth}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;color:#111827;background:#ffffff} .container{max-width:1100px;margin:0 auto;padding:24px} .header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-index:50} .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px} .brand{color:#2563eb;font-weight:700;text-decoration:none} .link{color:#374151;margin-left:16px;text-decoration:none} .link:hover{color:#2563eb} .hero{padding:56px 24px;background:linear-gradient(180deg,#4f46e5,#6366f1);color:#fff;text-align:center} h1{font-size:40px;margin:0 0 12px} .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.08);padding:20px;margin-top:20px} .btn{display:inline-flex;align-items:center;gap:8px;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:10px 16px;text-decoration:none} .btn:hover{filter:brightness(1.05)} </style>
+    <style>
+      :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:24px}
+      .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);z-index:50}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
+      .brand{background:linear-gradient(90deg,#2563eb,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;text-decoration:none}
+      .link{color:#374151;margin-left:16px;text-decoration:none}
+      .hero{padding:56px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
+      h1{font-size:40px;margin:0 0 12px}
+      .sub{color:var(--muted)}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:20px;margin-top:20px}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--fg);border:1px solid var(--border);border-radius:10px;padding:10px 16px;text-decoration:none;box-shadow:0 6px 16px rgba(59,130,246,.15)}
+    </style>
   </head>
   <body>
     <header class="header">
       <div class="nav container">
-        <a class="brand" href="index.html#home">HOAWriterAI</a>
+        <a class="brand" href="index.html">HOAWriterAI</a>
         <div>
-          <a class="link" href="index.html#tools">Tools</a>
-          <a class="link" href="index.html#generator">Generator</a>
+          <a class="link" href="index.html#features">Features</a>
+          <a class="link" href="fast-generation.html">Generate Now</a>
+          <a class="link" href="multilingual-support.html">Multilingual</a>
         </div>
       </div>
     </header>
     <section class="hero">
       <div class="container">
         <h1>Security & Reliability</h1>
-        <p>Protect data and API keys using server proxies and secure workflows; fall back to local generation when necessary.</p>
-        <p style="opacity:.85">Keywords: server proxy, API key safety, secure workflow, reliability, local generation.</p>
+        <p class="sub">Protect keys and data with server‑side storage, strict permissions, and clear retention; use local generation when needed.</p>
       </div>
     </section>
     <main class="container">
       <div class="card">
-        <h2 style="margin:0 0 8px">Overview</h2>
-        <p>Route AI calls through a server‑side function to keep keys private. Use HTTPS and strict CORS, and log only non‑sensitive metadata for reliability.</p>
-      </div>
-      <div class="card">
-        <h2 style="margin:0 0 8px">Recommendations</h2>
+        <h2 style="margin:0 0 8px">Recommended Practices</h2>
         <ul style="margin:0 0 0 18px">
-          <li>Store keys in environment variables on the server.</li>
-          <li>Rate limit and validate request payloads.</li>
-          <li>Provide graceful fallback to local generation.</li>
+          <li>Store API keys only in server environment variables.</li>
+          <li>Validate and rate‑limit requests; enforce HTTPS and strict CORS.</li>
+          <li>Retain non‑sensitive logs; define roles and permissions.</li>
+          <li>Fallback: local generation when connectivity is limited.</li>
         </ul>
       </div>
       <div class="card">
-        <h2 style="margin:0 0 8px">Proxy Integration Example</h2>
-        <pre style="white-space:pre-wrap;margin:0">POST /api/generate
-Authorization: Bearer &lt;server-issued token&gt;
-{
-  "prompt": "Draft HOA violation letter...",
-  "temperature": 0.2
-}
-
-Server verifies token → calls model provider with server‑side key → returns plain text.
-        </pre>
-      </div>
-      <div class="card">
-        <h2 style="margin:0 0 8px">Retention & Roles</h2>
-        <ul style="margin:0 0 0 18px">
-          <li>Retention: 90‑day notice logs without personal content.</li>
-          <li>Roles: admin (policy), manager (draft), reviewer (approval).</li>
-          <li>Audit: immutable timestamps and sender identity.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h2 style="margin:0 0 8px">Get Started</h2>
-        <a class="btn" href="index.html?preset=security#generator">Use Generator</a>
+        <a class="btn" href="index.html">Back to Home</a>
       </div>
     </main>
   </body>
