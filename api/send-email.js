@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { to, subject, html, text } = req.body || {};
+    const { to, subject, html, text, replyTo, bcc, from } = req.body || {};
     if (!to || !subject || (!html && !text)) {
       res.status(400).json({ error: 'Missing required fields' });
       return;
@@ -20,13 +20,16 @@ export default async function handler(req, res) {
     }
 
     const resend = new Resend(apiKey);
-    const { data, error } = await resend.emails.send({
-      from: 'HOAWriterAI <onboarding@resend.dev>',
+    const payload = {
+      from: from || 'HOAWriterAI <onboarding@resend.dev>',
       to,
       subject,
       html: html || `<pre style="white-space:pre-wrap">${(text || '').replace(/</g, '&lt;')}</pre>`,
       text,
-    });
+    };
+    if (replyTo) { payload.reply_to = replyTo; payload.replyTo = replyTo; }
+    if (bcc) { payload.bcc = Array.isArray(bcc) ? bcc : [bcc]; }
+    const { data, error } = await resend.emails.send(payload);
 
     if (error) {
       res.status(500).json({ error: error.message || 'Email send failed' });

@@ -87,6 +87,11 @@
               <label for="emailSubject">Email Subject</label>
               <input id="emailSubject" placeholder="HOA Violation Notice" />
 
+              <label for="replyTo">Reply-To</label>
+              <input id="replyTo" type="email" placeholder="your HOA email" />
+
+              <label style="display:flex;align-items:center;gap:8px"><input id="bccMe" type="checkbox" /> BCC me</label>
+
               <div class="actions">
                 <button type="button" class="btn" id="btnSendEmail">Send Email</button>
               </div>
@@ -173,7 +178,7 @@
           const res = await fetch('/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type':'application/json' },
-            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>') })
+            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>'), replyTo: document.getElementById('replyTo').value.trim(), bcc: document.getElementById('bccMe').checked ? document.getElementById('replyTo').value.trim() : undefined })
           });
           const data = await res.json();
           if(res.ok && data?.ok){ this.textContent = 'Sent'; }

@@ -53,8 +53,8 @@
     </header>
 
     <section class="hero">
-      <h1>HOAWriterAI</h1>
-      <p class="sub">Generate professional HOA violation notices in 60 seconds. Improve efficiency and ensure legal compliance.</p>
+      <h1>HOA Email & Notice Assistant</h1>
+      <p class="sub">Create compliant violation notices and email owners in minutes — consistent wording, faster workflows.</p>
       <a class="cta" href="#tool">Start Now</a>
     </section>
 
@@ -101,10 +101,12 @@
             <label for="hoaPhone">Phone</label>
             <input id="hoaPhone" placeholder="e.g., (555) 123-4567" />
 
-            <label for="hoaEmail">Email</label>
+            <label for="hoaEmail">HOA Email</label>
             <input id="hoaEmail" placeholder="e.g., compliance@evergreenhoa.org" />
             <label for="address">Property Address</label>
             <input id="address" placeholder="e.g., 123 Oak St, Unit 5" />
+            <label for="ownerName">Owner Name</label>
+            <input id="ownerName" placeholder="e.g., Alex Johnson" />
 
             <label for="date">Date</label>
             <input id="date" type="date" />
@@ -144,15 +146,22 @@
             </div>
 
             <div class="group" style="margin-top:12px">
+              <h4 style="margin:0 0 6px">Email Delivery</h4>
               <label for="recipientEmail">Recipient Email</label>
               <input id="recipientEmail" type="email" placeholder="recipient@example.com" />
 
               <label for="emailSubject">Email Subject</label>
               <input id="emailSubject" placeholder="HOA Violation Notice" />
 
+              <label for="replyTo">Reply-To</label>
+              <input id="replyTo" type="email" placeholder="defaults to HOA Email" />
+
+              <label style="display:flex;align-items:center;gap:8px"><input id="bccMe" type="checkbox" /> BCC me (HOA Email)</label>
+
               <div class="btnrow">
                 <button type="button" class="btn" id="btnSendEmail">Send Email</button>
               </div>
+              <p class="sub" style="color:var(--muted);margin:6px 0 0">Emails send via Resend API once deployed. For local preview, copy or print the notice.</p>
             </div>
           </div>
           <div class="group">
@@ -181,6 +190,7 @@
           hoaPhone: document.getElementById('hoaPhone').value.trim(),
           hoaEmail: document.getElementById('hoaEmail').value.trim(),
           address: document.getElementById('address').value.trim(),
+          ownerName: document.getElementById('ownerName').value.trim(),
           date: document.getElementById('date').value,
           type: document.getElementById('type').value,
           ccrs: document.getElementById('ccrs').value.trim(),
@@ -215,6 +225,7 @@
 Property: ${values.address}
 Date: ${values.date}
 
+${values.ownerName ? 'Dear ' + values.ownerName + ',\n\n' : ''}
 Per CC&Rs ${values.ccrs}, ${typeTemplates[values.type] || ''}${values.notes? ` ${values.notes}`:''}
 Deadline: ${values.deadline} calendar days from this notice.
 ${toneMap[values.tone]} If unresolved, a follow-up notice and fine may apply.${compliance}
@@ -257,13 +268,15 @@ HOA Compliance Team`);
         const preview = document.getElementById('preview').textContent || buildNotice(values);
         const to = document.getElementById('recipientEmail').value.trim();
         const subject = (document.getElementById('emailSubject').value.trim() || 'HOA Violation Notice');
+        const replyTo = (document.getElementById('replyTo').value.trim() || document.getElementById('hoaEmail').value.trim());
+        const bccMe = document.getElementById('bccMe').checked;
         if(!to){ alert('Please enter recipient email.'); return; }
         this.disabled = true; this.textContent = 'Sending…';
         try {
           const res = await fetch('/api/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>') })
+            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>'), replyTo, bcc: bccMe ? replyTo : undefined })
           });
           const data = await res.json();
           if(res.ok && data?.ok){ this.textContent = 'Sent'; }
