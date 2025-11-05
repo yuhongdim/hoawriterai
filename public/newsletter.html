@@ -158,8 +158,14 @@ Stay connected with your HOA. Reply with questions or ideas!</pre>
         const idx=sel.value; if(idx===''){ alert('Please select a template'); return; }
         const tpls=getTemplates(); const tpl=tpls[parseInt(idx,10)]; if(!tpl) return;
         const values=collect();
-        const body=fillPlaceholders(tpl.body||'', values);
-        document.getElementById('preview').textContent = body || 'Template body is empty.';
+        const structured = /\{\{\s*(updates|events|tips)\s*\}\}/.test(tpl.body||'');
+        if(structured){
+          // Use standard newsletter layout with bullet lists when template expects section placeholders
+          document.getElementById('preview').textContent = build(values);
+        } else {
+          const body=fillPlaceholders(tpl.body||'', values);
+          document.getElementById('preview').textContent = body || 'Template body is empty.';
+        }
       }
       populateTplSelect();
       document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);

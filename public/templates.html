@@ -59,6 +59,23 @@
       const KEY = 'hoa_templates';
       function getTemplates(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ return []; } }
       function saveTemplates(t){ localStorage.setItem(KEY, JSON.stringify(t)); }
+      function seedExamples(){
+        const existing = getTemplates();
+        if(existing && existing.length) return;
+        const examples = [
+          {
+            name: 'Newsletter — Monthly Update',
+            subject: 'HOA Newsletter — {{month}}',
+            body: 'Community Updates\n{{updates}}\n\nUpcoming Events\n{{events}}\n\nTips & Highlights\n{{tips}}\n\nStay connected with your HOA. Reply with questions or ideas!'
+          },
+          {
+            name: 'Violation Notice — General',
+            subject: 'HOA Violation Notice — {{type}}',
+            body: 'Per CC&Rs {{ccrs}}, regarding {{type}}: {{details}}.\nPlease address by {{date}}.\n\nSincerely,\nHOA Board'
+          }
+        ];
+        saveTemplates(examples);
+      }
       function render(){ const list = document.getElementById('tplList'); list.innerHTML='';
         getTemplates().forEach((tpl, i)=>{
           const tr = document.createElement('tr');
@@ -77,6 +94,7 @@
         const arr = getTemplates(); arr.push({ name, subject, body }); saveTemplates(arr); render();
         document.getElementById('tplName').value=''; document.getElementById('tplSubject').value=''; document.getElementById('tplBody').value='';
       });
+      seedExamples();
       render();
     </script>
   </body>

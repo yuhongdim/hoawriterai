@@ -68,6 +68,8 @@
           </select>
           <label for="recipient">Recipient Name</label>
           <input id="recipient" placeholder="e.g., Jane Smith" />
+          <label for="ccrs">CC&Rs Clause (optional)</label>
+          <input id="ccrs" placeholder="e.g., §4.2" />
           <label for="details">Details</label>
           <textarea id="details" placeholder="e.g., Describe the issue or the message context..."></textarea>
           <div style="margin-top:12px"><button class="btn" id="btnGenerate">Generate Letter</button> <a class="link" href="recipients.html" style="margin-left:10px">Send to Recipients</a></div>
@@ -150,6 +152,7 @@ HOA Board</pre>
         return {
           recipient: document.getElementById('recipient').value.trim(),
           type: document.getElementById('type').value.trim(),
+          ccrs: document.getElementById('ccrs').value.trim(),
           details: document.getElementById('details').value.trim(),
           date: new Date().toLocaleDateString()
         };
@@ -174,7 +177,7 @@ HOA Board</pre>
         const sign = `\n\nSincerely,\nHOA Board`;
         switch(type){
           case 'violation':
-            return `${header}\n\nWe are writing regarding a violation observed: ${details || '[describe violation]'}. Please address this within 7 days to remain compliant with community rules.${sign}`;
+            return `${header}\n\nWe are writing regarding a violation observed: ${details || '[describe violation]'}. ${document.getElementById('ccrs').value.trim() ? 'Per CC&Rs ' + document.getElementById('ccrs').value.trim() + ', ' : ''}Please address this within 7 days to remain compliant with community rules.${sign}`;
           case 'reminder':
             return `${header}\n\nThis is a friendly reminder regarding your HOA dues. ${details || '[payment details]'} Please submit payment by the due date.${sign}`;
           case 'meeting':
