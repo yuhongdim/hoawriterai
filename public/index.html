@@ -47,12 +47,14 @@
       <div class="brand">HOAWriterAI</div>
       <nav class="nav">
         <a class="link" href="index.html">Home</a>
-        <a class="link" href="features.html">Features</a>
-        <a class="link" href="pricing.html">Pricing</a>
-        <a class="link" href="use-cases.html">Use Cases</a>
+        <a class="link" href="#tool">Tool</a>
+        <a class="link" href="minutes.html">Minutes</a>
+        <a class="link" href="newsletter.html">Newsletter</a>
+        <a class="link" href="letters.html">Letters</a>
+        <a class="link" href="templates.html">Templates</a>
+        <a class="link" href="recipients.html">Recipients</a>
         <a class="link" href="blog.html">Blog</a>
-        <a class="link" href="contact.html">Contact</a>
-        <button id="langToggle" class="link" style="background:none;border:none;padding:0 6px;cursor:pointer">中文</button>
+        <a class="link" href="security-reliability.html">Security</a>
       </nav>
     </header>
 
@@ -426,77 +428,7 @@ HOA Compliance Team`);
         finally { setTimeout(()=>{ this.disabled = false; this.textContent = 'Send Email'; }, 1500); }
       });
 
-      // Language toggle (EN/中文)
-      (function(){
-        const t = {
-          en: {
-            heroTitle: 'AI for HOA Management — Write & Communicate Smarter',
-            heroSub: 'AI-powered meeting minutes, newsletters, and professional letters for HOAs.',
-            start: 'Start Now',
-            tool: 'Tool',
-            standalone: 'Standalone Generator',
-            fill: 'Fill Details',
-            labels: {
-              hoaName: 'HOA Name', hoaAddress: 'HOA Address', hoaPhone: 'Phone', hoaEmail: 'Email',
-              address: 'Property Address', date: 'Date', type: 'Violation Type', ccrs: 'CC&Rs Reference',
-              deadline: 'Grace Days', tone: 'Tone', notes: 'Additional Notes (optional)'
-            },
-            toneFormal: 'Formal', toneFriendly: 'Friendly',
-            generate: 'Generate Preview', copy: 'Copy Text', print: 'Print', pdf: 'Download PDF',
-            preview: 'Preview'
-          },
-          zh: {
-            heroTitle: '拥抱AI，革新HOA管理中的沟通与文档工作',
-            heroSub: '专注AI驱动的新闻通讯、会议纪要与信函写作，提升效率与专业性。',
-            start: '立即开始使用',
-            tool: '工具',
-            standalone: '独立生成页',
-            fill: '填写信息',
-            labels: {
-              hoaName: 'HOA 名称', hoaAddress: 'HOA 地址', hoaPhone: '电话', hoaEmail: '邮箱',
-              address: '物业地址', date: '日期', type: '违规类型', ccrs: 'CC&Rs 条款编号',
-              deadline: '整改宽限天数', tone: '语气', notes: '备注（可选）'
-            },
-            toneFormal: '正式', toneFriendly: '友好',
-            generate: '生成预览', copy: '复制文本', print: '打印', pdf: '下载 PDF',
-            preview: '预览'
-          }
-        };
-        function setLang(lang){
-          const L = t[lang];
-          document.querySelector('.hero h1').textContent = L.heroTitle;
-          document.querySelector('.hero .sub').textContent = L.heroSub;
-          document.querySelector('.hero .cta').textContent = L.start;
-          const navLinks = document.querySelectorAll('.nav .link');
-          if(navLinks[0]) navLinks[0].textContent = L.tool;
-          if(navLinks[1]) navLinks[1].textContent = L.standalone;
-          document.querySelector('h3').textContent = L.fill;
-          const map = L.labels;
-          document.querySelector('label[for="hoaName"]').textContent = map.hoaName;
-          document.querySelector('label[for="hoaAddress"]').textContent = map.hoaAddress;
-          document.querySelector('label[for="hoaPhone"]').textContent = map.hoaPhone;
-          document.querySelector('label[for="hoaEmail"]').textContent = map.hoaEmail;
-          document.querySelector('label[for="address"]').textContent = map.address;
-          document.querySelector('label[for="date"]').textContent = map.date;
-          document.querySelector('label[for="type"]').textContent = map.type;
-          document.querySelector('label[for="ccrs"]').textContent = map.ccrs;
-          document.querySelector('label[for="deadline"]').textContent = map.deadline;
-          document.querySelector('label[for="tone"]').textContent = map.tone;
-          document.querySelector('label[for="notes"]').textContent = map.notes;
-          document.getElementById('btnGenerate').textContent = L.generate;
-          document.getElementById('btnCopy').textContent = L.copy;
-          document.getElementById('btnPrint').textContent = L.print;
-          document.getElementById('btnPDF').textContent = L.pdf;
-          document.querySelector('#tool .group + .group h3').textContent = L.preview;
-          document.getElementById('langToggle').textContent = (lang === 'en' ? '中文' : 'EN');
-        }
-        let current = 'en';
-        setLang(current);
-        document.getElementById('langToggle').addEventListener('click', ()=>{
-          current = (current === 'en' ? 'zh' : 'en');
-          setLang(current);
-        });
-      })();
+      // Removed deprecated language toggle to simplify UI and avoid null references
     </script>
   </body>
 </html>
