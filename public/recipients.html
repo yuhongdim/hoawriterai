@@ -36,6 +36,12 @@
         <button class="btn" id="btnLoad">Load CSV</button>
         <button class="btn" id="btnClear">Clear</button>
       </div>
+      <div class="card" id="mapper" style="display:none">
+        <h3 style="margin:0 0 8px">Field Mapping</h3>
+        <p class="muted" style="margin:6px 0 10px">Map your CSV headers to required fields. Unmapped ones will be empty.</p>
+        <div id="mapRows" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+        <div style="margin-top:10px"><button class="btn" id="btnApplyMap">Apply Mapping</button></div>
+      </div>
       <div class="card">
         <label>Subject Template</label>
         <input id="subjectTpl" style="width:100%" value="Notice of Violation — {{type}}" />
@@ -86,7 +92,12 @@ HOA Compliance Team</textarea>
       }
       document.getElementById('btnLoad').addEventListener('click', async ()=>{
         const f = document.getElementById('csvFile').files[0]; if(!f){ alert('Choose a CSV file'); return; }
-        const text = await f.text(); const arr = parseCSV(text); save(arr); render();
+        const text = await f.text(); const arr = parseCSV(text);
+        window.__rawRecipients = arr; // hold until mapping applied
+        // Build mapping UI from headers of first row
+        const headers = Object.keys(arr[0]||{});
+        buildMapper(headers);
+        document.getElementById('mapper').style.display = 'block';
       });
       document.getElementById('btnClear').addEventListener('click', ()=>{ save([]); render(); });
 
@@ -118,6 +129,43 @@ HOA Compliance Team</textarea>
       async function sendAll(){ const list=load(); for(let i=0;i<list.length;i++){ await sendOne(i); await new Promise(r=>setTimeout(r,500)); } }
       document.getElementById('btnSendAll').addEventListener('click', sendAll);
       render();
+
+      // --- Field Mapping ---
+      const REQUIRED = ['name','email','address'];
+      const OPTIONAL = ['ccrs','type','deadline'];
+      function buildMapper(headers){
+        const wrap = document.getElementById('mapRows'); wrap.innerHTML='';
+        const fields = REQUIRED.concat(OPTIONAL);
+        const guess = (label)=>{
+          const found = headers.find(h=> h.trim().toLowerCase()===label);
+          return found || '';
+        };
+        fields.forEach(label=>{
+          const row = document.createElement('div');
+          const sel = document.createElement('select'); sel.style.width='100%';
+          const none = document.createElement('option'); none.value=''; none.textContent='(None)'; sel.appendChild(none);
+          headers.forEach(h=>{ const o=document.createElement('option'); o.value=h; o.textContent=h; sel.appendChild(o); });
+          sel.value = guess(label);
+          row.innerHTML = `<label class="muted">${label}</label>`;
+          wrap.appendChild(row);
+          row.appendChild(sel);
+          row.setAttribute('data-field', label);
+        });
+      }
+      function getMapping(){
+        const map={}; document.querySelectorAll('#mapRows > div').forEach(div=>{
+          const field = div.getAttribute('data-field'); const sel = div.querySelector('select'); map[field]=sel.value;
+        }); return map;
+      }
+      function applyMapping(arr, map){
+        return arr.map(o=>{
+          const out={}; Object.keys(map).forEach(k=>{ const src = map[k]; out[k] = src? (o[src.trim().toLowerCase()]||'') : ''; }); return out;
+        });
+      }
+      document.getElementById('btnApplyMap').addEventListener('click', ()=>{
+        const map = getMapping(); const arr = window.__rawRecipients||[]; const norm = applyMapping(arr, map);
+        save(norm); render(); document.getElementById('mapper').style.display='none';
+      });
     </script>
   </body>
 </html>

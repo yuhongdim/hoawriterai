@@ -48,6 +48,13 @@
       <div class="grid">
         <div class="card">
           <form id="noticeForm">
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+              <div>
+                <label for="tplSelect">Use Template</label>
+                <select id="tplSelect"><option value="">-- Select from Templates --</option></select>
+              </div>
+              <button type="button" class="btn secondary" id="btnApplyTpl">Apply Template</button>
+            </div>
             <label for="address">Property Address</label>
             <input id="address" placeholder="123 Oak St, Unit 5" />
 
@@ -137,6 +144,14 @@
                `${toneMap[values.tone]} If unresolved, a follow-up notice and fine may apply.\n\n` +
                `Regards,\nHOA Compliance Team`;
       }
+
+      // Template integration
+      function getTemplates(){ try{ return JSON.parse(localStorage.getItem('hoa_templates')||'[]'); }catch{ return []; } }
+      function populateTplSelect(){ const sel=document.getElementById('tplSelect'); if(!sel) return; const tpls=getTemplates(); while(sel.options.length>1){ sel.remove(1); } tpls.forEach((t,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=t.name||`Template ${i+1}`; sel.appendChild(o); }); }
+      function fillPlaceholders(tpl, values){ return (tpl||'').replace(/\{\{\s*(\w+)\s*\}\}/g,(_,k)=> (values[k]??'')); }
+      function applySelectedTemplate(){ const sel=document.getElementById('tplSelect'); const idx=sel.value; if(idx===''){ alert('Please select a template'); return; } const tpls=getTemplates(); const tpl=tpls[parseInt(idx,10)]; if(!tpl) return; const values=getValues(); document.getElementById('emailSubject').value = fillPlaceholders(tpl.subject||'HOA Violation Notice', values); document.getElementById('preview').textContent = fillPlaceholders(tpl.body||'', values); }
+      populateTplSelect();
+      document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);
 
       function getValues(){
         return {

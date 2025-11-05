@@ -43,6 +43,10 @@
             <div class="box"><div class="muted">Failed</div><div id="m-failed" style="font-size:22px;font-weight:800">0</div></div>
             <div class="box"><div class="muted">Total</div><div id="m-total" style="font-size:22px;font-weight:800">0</div></div>
           </div>
+          <div style="margin-top:12px">
+            <canvas id="chartDaily" height="140" style="width:100%"></canvas>
+            <canvas id="chartStatus" height="120" style="width:100%;margin-top:10px"></canvas>
+          </div>
           <div style="margin-top:12px;display:flex;gap:8px">
             <button class="btn" id="btnRefresh">Refresh</button>
             <button class="btn" id="btnClear">Clear Logs</button>
@@ -63,7 +67,19 @@
       </div>
     </main>
     <script>
-      async function fetchLogs(){ const r = await fetch('/api/logs?limit=300'); const j = await r.json(); return j.logs||[]; }
+      async function fetchLogs(){
+        try{ const r = await fetch('/api/logs?limit=300'); const j = await r.json(); return j.logs||[]; }
+        catch(e){
+          // Fallback sample for local static preview
+          const now = Date.now();
+          return [
+            { ts: now-86400000*2, type:'send_email', to:'user1@example.com', subject:'Test A', ok:true },
+            { ts: now-86400000*2+3600000, type:'send_email', to:'user2@example.com', subject:'Test B', ok:false },
+            { ts: now-86400000, type:'send_email', to:'user3@example.com', subject:'Test C', ok:true },
+            { ts: now-3600000, type:'send_email', to:'user4@example.com', subject:'Test D', ok:true }
+          ];
+        }
+      }
       function renderMetrics(logs){
         const emails = logs.filter(l=>l.type==='send_email');
         const sent = emails.filter(l=>l.ok).length;
@@ -81,6 +97,13 @@
         });
       }
       async function refresh(){ const logs = await fetchLogs(); window.__logs = logs; renderMetrics(logs); renderTable(logs); }
+      // --- Charts ---
+      function renderCharts(logs){ renderDaily(logs); renderStatus(logs); }
+      function daysRange(n){ const arr=[]; const today=new Date(); today.setHours(0,0,0,0); for(let i=n-1;i>=0;i--){ const d=new Date(today.getTime()-i*86400000); arr.push(d); } return arr; }
+      function dateKey(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+      function renderDaily(logs){ const cvs=document.getElementById('chartDaily'); if(!cvs) return; const ctx=cvs.getContext('2d'); const days=daysRange(7); const map={}; days.forEach(d=>{ map[dateKey(d)]=0; }); logs.filter(l=>l.type==='send_email').forEach(l=>{ const d=new Date(l.ts); d.setHours(0,0,0,0); const k=dateKey(d); if(map[k]!==undefined){ map[k] += 1; } }); const w=cvs.width = cvs.clientWidth; const h=cvs.height; ctx.clearRect(0,0,w,h); const keys=Object.keys(map); const max=Math.max(1,...Object.values(map)); const barW = Math.floor((w-20)/keys.length)-8; keys.forEach((k,i)=>{ const x=10+i*(barW+8); const val=map[k]; const bh = Math.floor((h-30)*val/max); ctx.fillStyle='#2563eb'; ctx.fillRect(x, h-20-bh, barW, bh); ctx.fillStyle='#64748b'; ctx.font='12px Segoe UI'; ctx.fillText(k.slice(5), x, h-6); }); ctx.fillStyle='#0f172a'; ctx.font='14px Segoe UI'; ctx.fillText('Emails per day (last 7)', 10, 16); }
+      function renderStatus(logs){ const cvs=document.getElementById('chartStatus'); if(!cvs) return; const ctx=cvs.getContext('2d'); const emails=logs.filter(l=>l.type==='send_email'); const sent=emails.filter(l=>l.ok).length; const failed=emails.filter(l=>!l.ok).length; const w=cvs.width = cvs.clientWidth; const h=cvs.height; ctx.clearRect(0,0,w,h); const total=Math.max(1,sent+failed); const sentW = Math.floor((w-40)*sent/total); const failedW = Math.floor((w-40)*failed/total); ctx.fillStyle='#10b981'; ctx.fillRect(20, 40, sentW, 24); ctx.fillStyle='#ef4444'; ctx.fillRect(20+sentW, 40, failedW, 24); ctx.fillStyle='#0f172a'; ctx.font='14px Segoe UI'; ctx.fillText('Sent', 20, 30); ctx.fillText('Failed', 20+sentW, 30); }
+      async function refresh(){ const logs = await fetchLogs(); window.__logs = logs; renderMetrics(logs); renderTable(logs); renderCharts(logs); }
       document.getElementById('btnRefresh').addEventListener('click', refresh);
       document.getElementById('btnClear').addEventListener('click', async ()=>{ await fetch('/api/logs', { method:'DELETE' }); await refresh(); });
       document.getElementById('btnSearch').addEventListener('click', ()=>{

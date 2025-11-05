@@ -176,6 +176,13 @@
 
             <div class="group" style="margin-top:12px">
               <h4 style="margin:0 0 6px">Email Delivery</h4>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+                <div>
+                  <label for="tplSelect">Use Template</label>
+                  <select id="tplSelect"><option value="">-- Select from Templates --</option></select>
+                </div>
+                <button type="button" class="btn secondary" id="btnApplyTpl">Apply Template</button>
+              </div>
               <label for="recipientEmail">Recipient Email</label>
               <input id="recipientEmail" type="email" placeholder="recipient@example.com" />
 
@@ -262,6 +269,35 @@ ${toneMap[values.tone]} If unresolved, a follow-up notice and fine may apply.${c
 Regards,
 HOA Compliance Team`);
       }
+
+      // Templates integration
+      function getTemplates(){
+        try{ return JSON.parse(localStorage.getItem('hoa_templates')||'[]'); }catch{ return []; }
+      }
+      function populateTplSelect(){
+        const sel = document.getElementById('tplSelect'); if(!sel) return;
+        const tpls = getTemplates();
+        while(sel.options.length>1){ sel.remove(1); }
+        tpls.forEach((t,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=t.name||`Template ${i+1}`; sel.appendChild(o); });
+      }
+      function fillPlaceholders(tpl, values){ return (tpl||'').replace(/\{\{\s*(\w+)\s*\}\}/g,(_,k)=> (values[k]??'')); }
+      function applySelectedTemplate(){
+        const sel = document.getElementById('tplSelect'); if(!sel) return;
+        const idx = sel.value; if(idx===''){ alert('Please select a template'); return; }
+        const tpls = getTemplates(); const tpl = tpls[parseInt(idx,10)]; if(!tpl) return;
+        const values = collect();
+        const subject = fillPlaceholders(tpl.subject||'HOA Violation Notice', values);
+        document.getElementById('emailSubject').value = subject;
+        const body = fillPlaceholders(tpl.body||'', values);
+        const header = `${values.hoaName ? values.hoaName + '\n' : ''}` +
+                       `${values.hoaAddress ? values.hoaAddress + '\n' : ''}` +
+                       `${values.hoaPhone ? 'Phone: ' + values.hoaPhone + '\n' : ''}` +
+                       `${values.hoaEmail ? 'Email: ' + values.hoaEmail + '\n' : ''}`;
+        document.getElementById('preview').textContent = `${header}\n\n${body}`.trim();
+      }
+      // init
+      populateTplSelect();
+      document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);
 
       document.getElementById('btnGenerate').addEventListener('click', ()=>{
         const values = collect();
