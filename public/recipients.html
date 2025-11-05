@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recipients | HOAWriterAI</title>
+    <style>
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:#0f172a;background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:22px}
+      header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 22px}
+      .link{color:#374151;text-decoration:none;margin-left:12px}
+      .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:16px;margin-bottom:16px}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}
+      input{padding:10px;border:1px solid #e5e7eb;border-radius:8px}
+      .btn{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+      .muted{color:#64748b}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI</a>
+        <div>
+          <a class="link" href="recipients.html">Recipients</a>
+          <a class="link" href="templates.html">Templates</a>
+        </div>
+      </div>
+    </header>
+    <main class="container">
+      <h1 style="margin:10px 0">Recipients</h1>
+      <p class="muted">Upload CSV with columns: name,email,address. Optional: ccrs,type,deadline.</p>
+      <div class="card">
+        <input type="file" id="csvFile" accept=".csv" />
+        <button class="btn" id="btnLoad">Load CSV</button>
+        <button class="btn" id="btnClear">Clear</button>
+      </div>
+      <div class="card">
+        <label>Subject Template</label>
+        <input id="subjectTpl" style="width:100%" value="Notice of Violation — {{type}}" />
+        <label>Body Template</label>
+        <textarea id="bodyTpl" style="width:100%;min-height:140px">Dear {{name}},
+Per CC&Rs {{ccrs}}, a violation was observed at {{address}}.
+Deadline: {{deadline}} days.
+
+Regards,
+HOA Compliance Team</textarea>
+        <div style="margin-top:10px"><label class="muted"><input type="checkbox" id="attachPdf" checked /> Attach PDF</label> <label class="muted" style="margin-left:10px"><input type="checkbox" id="bccMe" /> BCC me</label></div>
+        <div style="margin-top:10px">
+          <label for="replyTo">Reply-To</label>
+          <input id="replyTo" placeholder="compliance@your-hoa.org" style="width:100%" />
+        </div>
+        <div style="margin-top:10px"><button class="btn" id="btnSendAll">Send to All</button></div>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Address</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </main>
+    <script>
+      const KEY = 'hoa_recipients';
+      function parseCSV(text){
+        const rows=[]; let i=0; let cur=''; let inQ=false; const out=[];
+        for(const ch of text){
+          if(ch==='"'){ inQ = !inQ; cur+=ch; continue; }
+          if(ch===',' && !inQ){ out.push(cur.trim().replace(/^"|"$/g,'')); cur=''; continue; }
+          if(ch==='\n' && !inQ){ out.push(cur.trim().replace(/^"|"$/g,'')); rows.push(out.slice()); out.length=0; cur=''; continue; }
+          cur+=ch;
+        }
+        if(cur.length||out.length){ out.push(cur.trim().replace(/^"|"$/g,'')); rows.push(out.slice()); }
+        const header = rows.shift()||[];
+        return rows.map(r=>{ const obj={}; header.forEach((h,idx)=>{ obj[h.trim().toLowerCase()] = r[idx]||''; }); return obj; });
+      }
+      function save(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+      function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ return []; } }
+      function render(){ const tbody=document.getElementById('rows'); tbody.innerHTML='';
+        load().forEach((r,idx)=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML = `<td>${r.name||''}</td><td>${r.email||''}</td><td>${r.address||''}</td><td id="st-${idx}">Pending</td><td><button data-i="${idx}" class="btn">Send</button></td>`;
+          tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>sendOne(parseInt(b.getAttribute('data-i')))));
+      }
+      document.getElementById('btnLoad').addEventListener('click', async ()=>{
+        const f = document.getElementById('csvFile').files[0]; if(!f){ alert('Choose a CSV file'); return; }
+        const text = await f.text(); const arr = parseCSV(text); save(arr); render();
+      });
+      document.getElementById('btnClear').addEventListener('click', ()=>{ save([]); render(); });
+
+      function fill(tpl, data){ return tpl.replace(/\{\{(\w+)\}\}/g,(_,k)=> (data[k]||'')); }
+      async function sendOne(idx){
+        const list = load(); const r = list[idx]; if(!r){ return; }
+        const subjectTpl = document.getElementById('subjectTpl').value.trim();
+        const bodyTpl = document.getElementById('bodyTpl').value.trim();
+        const replyTo = document.getElementById('replyTo').value.trim();
+        const attachPdf = document.getElementById('attachPdf').checked;
+        const bccMe = document.getElementById('bccMe').checked;
+        const payload = {
+          to: r.email,
+          subject: fill(subjectTpl, r),
+          text: fill(bodyTpl, r),
+          html: fill(bodyTpl, r).replace(/\n/g,'<br/>'),
+          replyTo,
+          bcc: bccMe ? replyTo : undefined,
+          attachPdf,
+          pdfTitle: fill(subjectTpl, r)
+        };
+        const st = document.getElementById('st-'+idx); st.textContent = 'Sending…';
+        try{
+          const res = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          const data = await res.json();
+          st.textContent = res.ok && data?.ok ? 'Sent' : 'Failed';
+        }catch(e){ st.textContent = 'Network error'; }
+      }
+      async function sendAll(){ const list=load(); for(let i=0;i<list.length;i++){ await sendOne(i); await new Promise(r=>setTimeout(r,500)); } }
+      document.getElementById('btnSendAll').addEventListener('click', sendAll);
+      render();
+    </script>
+  </body>
+</html>

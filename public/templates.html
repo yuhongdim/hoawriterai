@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Templates | HOAWriterAI</title>
+    <style>
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:#0f172a;background:#fff}
+      .container{max-width:1000px;margin:0 auto;padding:22px}
+      header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 22px}
+      .link{color:#374151;text-decoration:none;margin-left:12px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+      .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:16px}
+      label{display:block;margin:10px 0 6px;color:#334155;font-weight:600}
+      input,textarea{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px}
+      textarea{min-height:120px}
+      .btn{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #e5e7eb;padding:8px;text-align:left}
+      .muted{color:#64748b}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI</a>
+        <div>
+          <a class="link" href="recipients.html">Recipients</a>
+          <a class="link" href="templates.html">Templates</a>
+        </div>
+      </div>
+    </header>
+    <main class="container">
+      <h1 style="margin:10px 0">Templates Library</h1>
+      <p class="muted">Use placeholders like {{name}}, {{address}}, {{ccrs}}, {{deadline}} and {{type}}. Tone can be applied on the generator page.</p>
+      <div class="grid">
+        <div class="card">
+          <label for="tplName">Template Name</label>
+          <input id="tplName" placeholder="e.g., Parking Violation" />
+          <label for="tplSubject">Subject</label>
+          <input id="tplSubject" placeholder="Notice of Violation — {{type}}" />
+          <label for="tplBody">Body</label>
+          <textarea id="tplBody" placeholder="Dear {{name}},\nPer CC&Rs {{ccrs}}, ...\nProperty: {{address}}\nDeadline: {{deadline}} days."></textarea>
+          <div style="margin-top:10px">
+            <button class="btn" id="btnSaveTpl">Save Template</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Saved Templates</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Subject</th><th>Actions</th></tr></thead>
+            <tbody id="tplList"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <script>
+      const KEY = 'hoa_templates';
+      function getTemplates(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ return []; } }
+      function saveTemplates(t){ localStorage.setItem(KEY, JSON.stringify(t)); }
+      function render(){ const list = document.getElementById('tplList'); list.innerHTML='';
+        getTemplates().forEach((tpl, i)=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${tpl.name}</td><td>${tpl.subject}</td><td><button data-i="${i}" class="btn small">Delete</button></td>`;
+          list.appendChild(tr);
+        });
+        list.querySelectorAll('button').forEach(b=>{
+          b.addEventListener('click',()=>{ const i = parseInt(b.getAttribute('data-i')); const arr=getTemplates(); arr.splice(i,1); saveTemplates(arr); render(); });
+        });
+      }
+      document.getElementById('btnSaveTpl').addEventListener('click',()=>{
+        const name = document.getElementById('tplName').value.trim();
+        const subject = document.getElementById('tplSubject').value.trim();
+        const body = document.getElementById('tplBody').value.trim();
+        if(!name||!subject||!body){ alert('Please fill name, subject, and body'); return; }
+        const arr = getTemplates(); arr.push({ name, subject, body }); saveTemplates(arr); render();
+        document.getElementById('tplName').value=''; document.getElementById('tplSubject').value=''; document.getElementById('tplBody').value='';
+      });
+      render();
+    </script>
+  </body>
+</html>
