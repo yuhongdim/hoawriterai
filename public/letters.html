@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HOA Letter Generator AI | HOAWriterAI</title>
+    <meta name="description" content="Generate professional HOA letters: violations, reminders, notices, and updates with AI." />
+    <style>
+      :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:24px}
+      .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border)}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
+      .link{color:#374151;margin-left:16px;text-decoration:none}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 16px;text-decoration:none;cursor:pointer}
+      .hero{padding:40px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
+      h1{font-size:28px;margin:0 0 8px}
+      .sub{color:var(--muted)}
+      .grid{display:grid;grid-template-columns:2fr 3fr;gap:20px}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:18px}
+      label{display:block;margin:10px 0 6px;color:#334155;font-weight:600}
+      select,input,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+      textarea{min-height:100px}
+      pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI.COM</a>
+        <div>
+          <a class="link" href="index.html">Home</a>
+          <a class="link" href="features.html">Features</a>
+          <a class="link" href="pricing.html">Pricing</a>
+          <a class="link" href="use-cases.html">Use Cases</a>
+          <a class="link" href="blog.html">Blog</a>
+          <a class="link" href="contact.html">Contact</a>
+        </div>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="container">
+        <h1>HOA Letter Generator AI</h1>
+        <p class="sub">Create notices, reminders, violations, and updates in minutes.</p>
+        <div style="margin-top:14px"><a class="btn" href="#demo">Generate a Letter</a> <a class="link" style="margin-left:12px" href="templates.html">Templates</a></div>
+      </div>
+    </section>
+    <main class="container">
+      <div class="grid">
+        <div class="card" id="demo">
+          <h3 style="margin:0 0 10px">Interactive Demo</h3>
+          <label for="type">Letter Type</label>
+          <select id="type">
+            <option value="violation">Violation Notice</option>
+            <option value="reminder">Payment Reminder</option>
+            <option value="general">General Update</option>
+            <option value="meeting">Meeting Notice</option>
+          </select>
+          <label for="recipient">Recipient Name</label>
+          <input id="recipient" placeholder="e.g., Jane Smith" />
+          <label for="details">Details</label>
+          <textarea id="details" placeholder="e.g., Describe the issue or the message context..."></textarea>
+          <div style="margin-top:12px"><button class="btn" id="btnGenerate">Generate Letter</button> <a class="link" href="recipients.html" style="margin-left:10px">Send to Recipients</a></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 10px">Preview</h3>
+          <pre id="preview">Choose a type, fill the form, and generate.</pre>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3 style="margin:0 0 10px">Benefits</h3>
+        <ul style="margin:0;color:#334155">
+          <li>Compliant, professional tone</li>
+          <li>Pre-structured formats per letter type</li>
+          <li>Personalization with placeholders</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:20px;text-align:center">
+        <h3 style="margin:0 0 8px">Standardize HOA communications</h3>
+        <a class="btn" href="#demo">Generate a Letter</a>
+      </div>
+    </main>
+    <footer class="container" style="padding:24px;color:#64748b;border-top:1px solid var(--border);margin-top:24px">© HOAWriterAI — Professional Communication for HOAs</footer>
+
+    <script>
+      function format(type, name, details){
+        const today = new Date().toLocaleDateString();
+        const header = `Date: ${today}\n\nDear ${name || 'Homeowner'},`;
+        const sign = `\n\nSincerely,\nHOA Board`;
+        switch(type){
+          case 'violation':
+            return `${header}\n\nWe are writing regarding a violation observed: ${details || '[describe violation]'}. Please address this within 7 days to remain compliant with community rules.${sign}`;
+          case 'reminder':
+            return `${header}\n\nThis is a friendly reminder regarding your HOA dues. ${details || '[payment details]'} Please submit payment by the due date.${sign}`;
+          case 'meeting':
+            return `${header}\n\nYou are invited to the upcoming HOA meeting. ${details || '[date, time, agenda]'} We appreciate your participation.${sign}`;
+          default:
+            return `${header}\n\n${details || 'We would like to share an update regarding our community.'}${sign}`;
+        }
+      }
+      document.getElementById('btnGenerate').addEventListener('click', function(){
+        const type = document.getElementById('type').value;
+        const name = document.getElementById('recipient').value.trim();
+        const details = document.getElementById('details').value.trim();
+        document.getElementById('preview').textContent = format(type, name, details);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI HOA Meeting Minutes Generator | HOAWriterAI</title>
+    <meta name="description" content="Generate professional HOA meeting minutes fast. AI summarizes agenda, decisions, and action items with structured output." />
+    <style>
+      :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569;--accent:#2563eb}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:24px}
+      .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border)}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
+      .link{color:#374151;margin-left:16px;text-decoration:none}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 16px;text-decoration:none;cursor:pointer}
+      .hero{padding:40px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
+      h1{font-size:28px;margin:0 0 8px}
+      .sub{color:var(--muted)}
+      .grid{display:grid;grid-template-columns:2fr 3fr;gap:20px}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:18px}
+      label{display:block;margin:10px 0 6px;color:#334155;font-weight:600}
+      input,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+      textarea{min-height:100px}
+      pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI.COM</a>
+        <div>
+          <a class="link" href="index.html">Home</a>
+          <a class="link" href="features.html">Features</a>
+          <a class="link" href="pricing.html">Pricing</a>
+          <a class="link" href="use-cases.html">Use Cases</a>
+          <a class="link" href="blog.html">Blog</a>
+          <a class="link" href="contact.html">Contact</a>
+        </div>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="container">
+        <h1>AI HOA Meeting Minutes Generator</h1>
+        <p class="sub">Say goodbye to manual note-taking — structured, professional minutes in seconds.</p>
+        <div style="margin-top:14px"><a class="btn" href="#demo">Generate Minutes Now</a> <a class="link" style="margin-left:12px" href="index.html#tool">Try for Free</a></div>
+      </div>
+    </section>
+    <main class="container">
+      <div class="grid">
+        <div class="card" id="demo">
+          <h3 style="margin:0 0 10px">Interactive Demo</h3>
+          <label for="meetingDate">Meeting Date</label>
+          <input id="meetingDate" type="date" />
+          <label for="attendees">Attendees (comma-separated)</label>
+          <input id="attendees" placeholder="Board members, Manager, Guests" />
+          <label for="agenda">Agenda Points</label>
+          <textarea id="agenda" placeholder="e.g., Budget review; Landscape updates; Parking enforcement"></textarea>
+          <label for="decisions">Decisions & Motions</label>
+          <textarea id="decisions" placeholder="e.g., Approved 2025 budget; Motion to hire new landscaper"></textarea>
+          <div style="margin-top:12px"><button class="btn" id="btnGenerate">Generate Minutes</button> <a class="link" href="fast-generation.html" style="margin-left:10px">Quick Generator</a></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 10px">Preview</h3>
+          <pre id="preview">Fill the form and click "Generate Minutes".</pre>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3 style="margin:0 0 10px">Why It Works</h3>
+        <ul style="margin:0;color:#334155">
+          <li>Smart summarization of agenda and outcomes</li>
+          <li>Structured output following HOA standards</li>
+          <li>Action items with owners and due dates</li>
+          <li>Consistency across meetings and boards</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:20px;text-align:center">
+        <h3 style="margin:0 0 8px">Ready to streamline your minutes?</h3>
+        <a class="btn" href="#demo">Generate Minutes Now</a>
+      </div>
+    </main>
+    <footer class="container" style="padding:24px;color:#64748b;border-top:1px solid var(--border);margin-top:24px">© HOAWriterAI — Professional Communication for HOAs</footer>
+
+    <script>
+      function buildMinutes(values){
+        const date = values.meetingDate || new Date().toISOString().slice(0,10);
+        const attendees = values.attendees ? values.attendees.split(',').map(s=>s.trim()).filter(Boolean) : [];
+        const agenda = (values.agenda||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
+        const decisions = (values.decisions||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
+        const header = `HOA Meeting Minutes\nDate: ${date}\nAttendees: ${attendees.join(', ')}`;
+        const agendaList = agenda.map((a,i)=>`${i+1}. ${a}`).join('\n');
+        const decisionsList = decisions.map((d,i)=>`- ${d}`).join('\n');
+        const actions = decisions.map((d,i)=>`Action ${i+1}: ${d} — Owner: TBD, Due: TBD`).join('\n');
+        return `${header}\n\nAgenda\n${agendaList||'-'}\n\nDecisions & Motions\n${decisionsList||'-'}\n\nAction Items\n${actions||'-'}\n\nAdjournment\nMeeting adjourned. Next meeting date TBD.`;
+      }
+      function collect(){
+        return {
+          meetingDate: document.getElementById('meetingDate').value,
+          attendees: document.getElementById('attendees').value.trim(),
+          agenda: document.getElementById('agenda').value.trim(),
+          decisions: document.getElementById('decisions').value.trim()
+        };
+      }
+      document.getElementById('btnGenerate').addEventListener('click', function(){
+        const txt = buildMinutes(collect());
+        document.getElementById('preview').textContent = txt;
+      });
+    </script>
+  </body>
+</html>

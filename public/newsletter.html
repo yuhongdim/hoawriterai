@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HOA Newsletter AI Writer | HOAWriterAI</title>
+    <meta name="description" content="Create engaging HOA newsletters with AI. Structure sections, generate content ideas, and boost community engagement." />
+    <style>
+      :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:24px}
+      .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border)}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
+      .link{color:#374151;margin-left:16px;text-decoration:none}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 16px;text-decoration:none;cursor:pointer}
+      .hero{padding:40px 24px;background:linear-gradient(180deg,#eef2ff,#e8fbff);text-align:center;border-bottom:1px solid var(--border)}
+      h1{font-size:28px;margin:0 0 8px}
+      .sub{color:var(--muted)}
+      .grid{display:grid;grid-template-columns:2fr 3fr;gap:20px}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:18px}
+      label{display:block;margin:10px 0 6px;color:#334155;font-weight:600}
+      input,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+      textarea{min-height:100px}
+      pre{margin:0;font-family:"SFMono-Regular",Consolas,Monaco,monospace;font-size:13px;white-space:pre-wrap;color:#111}
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI.COM</a>
+        <div>
+          <a class="link" href="index.html">Home</a>
+          <a class="link" href="features.html">Features</a>
+          <a class="link" href="pricing.html">Pricing</a>
+          <a class="link" href="use-cases.html">Use Cases</a>
+          <a class="link" href="blog.html">Blog</a>
+          <a class="link" href="contact.html">Contact</a>
+        </div>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="container">
+        <h1>HOA Newsletter AI Writer</h1>
+        <p class="sub">Plan sections, generate ideas, and craft engaging updates every month.</p>
+        <div style="margin-top:14px"><a class="btn" href="#demo">Create Newsletter</a> <a class="link" style="margin-left:12px" href="recipients.html">Send to Recipients</a></div>
+      </div>
+    </section>
+    <main class="container">
+      <div class="grid">
+        <div class="card" id="demo">
+          <h3 style="margin:0 0 10px">Interactive Demo</h3>
+          <label for="month">Month</label>
+          <input id="month" placeholder="e.g., November 2025" />
+          <label for="updates">Community Updates</label>
+          <textarea id="updates" placeholder="e.g., Pool maintenance completed; New parking rules"></textarea>
+          <label for="events">Upcoming Events</label>
+          <textarea id="events" placeholder="e.g., Holiday potluck on Dec 12; Board meeting Dec 7"></textarea>
+          <label for="tips">Tips & Highlights</label>
+          <textarea id="tips" placeholder="e.g., Winter landscaping tips; Safety reminders"></textarea>
+          <div style="margin-top:12px"><button class="btn" id="btnGenerate">Generate Newsletter</button> <a class="link" href="templates.html" style="margin-left:10px">Templates Library</a></div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 10px">Preview</h3>
+          <pre id="preview">Fill the form and click "Generate Newsletter".</pre>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h3 style="margin:0 0 10px">Benefits</h3>
+        <ul style="margin:0;color:#334155">
+          <li>Consistent structure and tone</li>
+          <li>Idea prompts for each section</li>
+          <li>Ready to copy, print, or email</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:20px;text-align:center">
+        <h3 style="margin:0 0 8px">Make newsletters effortless</h3>
+        <a class="btn" href="#demo">Create Newsletter</a>
+      </div>
+    </main>
+    <footer class="container" style="padding:24px;color:#64748b;border-top:1px solid var(--border);margin-top:24px">© HOAWriterAI — Professional Communication for HOAs</footer>
+
+    <script>
+      function build(values){
+        const month = values.month || 'This Month';
+        const updates = (values.updates||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
+        const events = (values.events||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
+        const tips = (values.tips||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
+        return `HOA Newsletter — ${month}\n\nCommunity Updates\n${updates.map(u=>`- ${u}`).join('\n')||'-'}\n\nUpcoming Events\n${events.map(e=>`- ${e}`).join('\n')||'-'}\n\nTips & Highlights\n${tips.map(t=>`- ${t}`).join('\n')||'-'}\n\nStay connected with your HOA. Reply with questions or ideas!`;
+      }
+      function collect(){
+        return {
+          month: document.getElementById('month').value.trim(),
+          updates: document.getElementById('updates').value.trim(),
+          events: document.getElementById('events').value.trim(),
+          tips: document.getElementById('tips').value.trim()
+        };
+      }
+      document.getElementById('btnGenerate').addEventListener('click', function(){
+        document.getElementById('preview').textContent = build(collect());
+      });
+    </script>
+  </body>
+</html>
