@@ -1,12 +1,19 @@
+function getKvConfig() {
+  const rawUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!rawUrl || !token) return null;
+  const url = rawUrl.replace(/\/$/, '');
+  return { url, token };
+}
+
 export async function saveLog(entry) {
   try {
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-      const url = process.env.KV_REST_API_URL.replace(/\/$/, '');
-      const token = process.env.KV_REST_API_TOKEN;
+    const cfg = getKvConfig();
+    if (cfg) {
       const key = 'hoawriterai:logs';
       const value = encodeURIComponent(JSON.stringify({ ...entry, ts: Date.now() }));
-      await fetch(`${url}/LPUSH/${key}/${value}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await fetch(`${cfg.url}/LPUSH/${key}/${value}`, {
+        headers: { Authorization: `Bearer ${cfg.token}` },
       });
       return { ok: true };
     }
@@ -20,12 +27,11 @@ export async function saveLog(entry) {
 
 export async function getLogs(limit = 100) {
   try {
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-      const url = process.env.KV_REST_API_URL.replace(/\/$/, '');
-      const token = process.env.KV_REST_API_TOKEN;
+    const cfg = getKvConfig();
+    if (cfg) {
       const key = 'hoawriterai:logs';
-      const resp = await fetch(`${url}/LRANGE/${key}/0/${Math.max(0, limit - 1)}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const resp = await fetch(`${cfg.url}/LRANGE/${key}/0/${Math.max(0, limit - 1)}`, {
+        headers: { Authorization: `Bearer ${cfg.token}` },
       });
       const json = await resp.json();
       const arr = (json.result || []).map((s) => {
@@ -41,11 +47,10 @@ export async function getLogs(limit = 100) {
 
 export async function clearLogs() {
   try {
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-      const url = process.env.KV_REST_API_URL.replace(/\/$/, '');
-      const token = process.env.KV_REST_API_TOKEN;
+    const cfg = getKvConfig();
+    if (cfg) {
       const key = 'hoawriterai:logs';
-      await fetch(`${url}/DEL/${key}`, { headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`${cfg.url}/DEL/${key}`, { headers: { Authorization: `Bearer ${cfg.token}` } });
       return { ok: true };
     }
   } catch (e) {

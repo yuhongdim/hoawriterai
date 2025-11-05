@@ -72,6 +72,10 @@
         <div class="card">
           <h3 style="margin:0 0 10px">Preview</h3>
           <pre id="preview">Fill the form and click "Generate Newsletter".</pre>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn" id="btnCopy">Copy Text</button>
+            <button class="btn" id="btnPrint">Print</button>
+          </div>
         </div>
       </div>
       <div class="card" style="margin-top:20px">
@@ -171,6 +175,16 @@ Stay connected with your HOA. Reply with questions or ideas!</pre>
       document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);
       document.getElementById('btnGenerate').addEventListener('click', function(){
         document.getElementById('preview').textContent = build(collect());
+      });
+      document.getElementById('btnCopy').addEventListener('click', async function(){
+        const txt = document.getElementById('preview').textContent;
+        try { await navigator.clipboard.writeText(txt); this.textContent = 'Copied'; setTimeout(()=>this.textContent='Copy Text',1200);} catch(e){ alert('Copy failed'); }
+      });
+      document.getElementById('btnPrint').addEventListener('click', function(){
+        const w = window.open('', '_blank');
+        const content = document.getElementById('preview').textContent.replace(/\n/g,'<br/>');
+        w.document.write(`<html><head><title>Newsletter</title></head><body style="font-family:Arial, sans-serif; padding:24px">${content}</body></html>`);
+        w.document.close(); w.focus(); w.print();
       });
     </script>
   </body>
