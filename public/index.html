@@ -142,6 +142,18 @@
               <button type="button" class="btn secondary" id="btnPrint">Print</button>
               <button type="button" class="btn secondary" id="btnPDF">Download PDF</button>
             </div>
+
+            <div class="group" style="margin-top:12px">
+              <label for="recipientEmail">Recipient Email</label>
+              <input id="recipientEmail" type="email" placeholder="recipient@example.com" />
+
+              <label for="emailSubject">Email Subject</label>
+              <input id="emailSubject" placeholder="HOA Violation Notice" />
+
+              <div class="btnrow">
+                <button type="button" class="btn" id="btnSendEmail">Send Email</button>
+              </div>
+            </div>
           </div>
           <div class="group">
             <h3 style="margin:0 0 10px">Preview</h3>
@@ -237,6 +249,27 @@ HOA Compliance Team`);
         w.document.close();
         w.focus();
         w.print();
+      });
+
+      // Send Email via serverless API
+      document.getElementById('btnSendEmail').addEventListener('click', async function(){
+        const values = collect();
+        const preview = document.getElementById('preview').textContent || buildNotice(values);
+        const to = document.getElementById('recipientEmail').value.trim();
+        const subject = (document.getElementById('emailSubject').value.trim() || 'HOA Violation Notice');
+        if(!to){ alert('Please enter recipient email.'); return; }
+        this.disabled = true; this.textContent = 'Sending…';
+        try {
+          const res = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>') })
+          });
+          const data = await res.json();
+          if(res.ok && data?.ok){ this.textContent = 'Sent'; }
+          else { this.textContent = 'Failed'; alert(data?.error || 'Send failed'); }
+        } catch(e){ this.textContent = 'Failed'; alert('Network error'); }
+        finally { setTimeout(()=>{ this.disabled = false; this.textContent = 'Send Email'; }, 1500); }
       });
 
       // Language toggle (EN/中文)

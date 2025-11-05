@@ -79,6 +79,18 @@
               <button type="button" class="btn secondary" id="btnCopy">Copy Text</button>
               <button type="button" class="btn secondary" id="btnPrint">Print</button>
             </div>
+
+            <div style="margin-top:12px">
+              <label for="recipientEmail">Recipient Email</label>
+              <input id="recipientEmail" type="email" placeholder="recipient@example.com" />
+
+              <label for="emailSubject">Email Subject</label>
+              <input id="emailSubject" placeholder="HOA Violation Notice" />
+
+              <div class="actions">
+                <button type="button" class="btn" id="btnSendEmail">Send Email</button>
+              </div>
+            </div>
           </form>
         </div>
 
@@ -147,6 +159,27 @@
         win.document.close();
         win.focus();
         win.print();
+      });
+
+      // Send Email via API
+      document.getElementById('btnSendEmail').addEventListener('click', async function(){
+        const values = getValues();
+        const preview = document.getElementById('preview').textContent || buildText(values);
+        const to = document.getElementById('recipientEmail').value.trim();
+        const subject = (document.getElementById('emailSubject').value.trim() || 'HOA Violation Notice');
+        if(!to){ alert('Please enter recipient email.'); return; }
+        this.disabled = true; this.textContent = 'Sending…';
+        try {
+          const res = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({ to, subject, text: preview, html: preview.replace(/\n/g,'<br/>') })
+          });
+          const data = await res.json();
+          if(res.ok && data?.ok){ this.textContent = 'Sent'; }
+          else { this.textContent = 'Failed'; alert(data?.error || 'Send failed'); }
+        } catch(e){ this.textContent = 'Failed'; alert('Network error'); }
+        finally { setTimeout(()=>{ this.disabled = false; this.textContent = 'Send Email'; }, 1500); }
       });
     </script>
   </body>
