@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard | HOAWriterAI</title>
+    <style>
+      :root{--border:#e5e7eb;--fg:#0f172a;--muted:#475569}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;margin:0;color:var(--fg);background:#fff}
+      .container{max-width:1100px;margin:0 auto;padding:24px}
+      .header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border)}
+      .nav{display:flex;justify-content:space-between;align-items:center;padding:12px 24px}
+      .link{color:#374151;margin-left:16px;text-decoration:none}
+      .grid{display:grid;grid-template-columns:2fr 3fr;gap:20px}
+      .card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.06);padding:18px}
+      .metric{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .metric .box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid var(--border);padding:8px;text-align:left;font-size:13px}
+      .muted{color:var(--muted)}
+      .btn{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 16px;cursor:pointer}
+      input{padding:8px;border:1px solid var(--border);border-radius:8px}
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="nav container">
+        <a class="link" href="index.html">HOAWriterAI</a>
+        <div>
+          <a class="link" href="index.html">Home</a>
+          <a class="link" href="recipients.html">Recipients</a>
+          <a class="link" href="templates.html">Templates</a>
+        </div>
+      </div>
+    </header>
+    <main class="container">
+      <h1>Admin Dashboard</h1>
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Event Board</h3>
+          <div class="metric" id="metric">
+            <div class="box"><div class="muted">Sent</div><div id="m-sent" style="font-size:22px;font-weight:800">0</div></div>
+            <div class="box"><div class="muted">Failed</div><div id="m-failed" style="font-size:22px;font-weight:800">0</div></div>
+            <div class="box"><div class="muted">Total</div><div id="m-total" style="font-size:22px;font-weight:800">0</div></div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn" id="btnRefresh">Refresh</button>
+            <button class="btn" id="btnClear">Clear Logs</button>
+          </div>
+          <p class="muted" style="margin-top:8px">Enable Vercel KV with `KV_REST_API_URL` and `KV_REST_API_TOKEN` to persist logs across requests. Optional: set Resend webhook to `/api/resend-webhook`.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Logs</h3>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input id="search" placeholder="search subject or email" style="flex:1"/>
+            <button class="btn" id="btnSearch">Search</button>
+          </div>
+          <table>
+            <thead><tr><th>Time</th><th>Type</th><th>To</th><th>Subject</th><th>Status</th></tr></thead>
+            <tbody id="logRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <script>
+      async function fetchLogs(){ const r = await fetch('/api/logs?limit=300'); const j = await r.json(); return j.logs||[]; }
+      function renderMetrics(logs){
+        const emails = logs.filter(l=>l.type==='send_email');
+        const sent = emails.filter(l=>l.ok).length;
+        const failed = emails.filter(l=>!l.ok).length;
+        document.getElementById('m-sent').textContent = sent;
+        document.getElementById('m-failed').textContent = failed;
+        document.getElementById('m-total').textContent = logs.length;
+      }
+      function fmt(ts){ const d=new Date(ts); return d.toLocaleString(); }
+      function renderTable(logs){ const tbody=document.getElementById('logRows'); tbody.innerHTML='';
+        logs.forEach(l=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML = `<td>${fmt(l.ts)}</td><td>${l.type}</td><td>${l.to||l.event?.data?.to||''}</td><td>${l.subject||l.event?.data?.subject||''}</td><td>${l.ok===false?'Failed':'OK'}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      async function refresh(){ const logs = await fetchLogs(); window.__logs = logs; renderMetrics(logs); renderTable(logs); }
+      document.getElementById('btnRefresh').addEventListener('click', refresh);
+      document.getElementById('btnClear').addEventListener('click', async ()=>{ await fetch('/api/logs', { method:'DELETE' }); await refresh(); });
+      document.getElementById('btnSearch').addEventListener('click', ()=>{
+        const q = document.getElementById('search').value.trim().toLowerCase();
+        const logs = (window.__logs||[]).filter(l=> (l.subject||'').toLowerCase().includes(q) || (l.to||'').toLowerCase().includes(q));
+        renderTable(logs);
+      });
+      refresh();
+    </script>
+  </body>
+</html>

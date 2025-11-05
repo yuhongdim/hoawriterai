@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { saveLog } from './_storage.js';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
 export default async function handler(req, res) {
@@ -67,6 +68,7 @@ export default async function handler(req, res) {
       ];
     }
     const { data, error } = await resend.emails.send(payload);
+    await saveLog({ type: 'send_email', to, subject, ok: !error, id: data?.id || null, replyTo, bcc, from, attachPdf });
 
     if (error) {
       res.status(500).json({ error: error.message || 'Email send failed' });
