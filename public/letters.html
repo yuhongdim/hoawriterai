@@ -49,6 +49,13 @@
       <div class="grid">
         <div class="card" id="demo">
           <h3 style="margin:0 0 10px">Interactive Demo</h3>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+            <div>
+              <label for="tplSelect">Use Template</label>
+              <select id="tplSelect"><option value="">-- Select from Templates --</option></select>
+            </div>
+            <button class="btn" id="btnApplyTpl" type="button">Apply Template</button>
+          </div>
           <label for="type">Letter Type</label>
           <select id="type">
             <option value="violation">Violation Notice</option>
@@ -134,6 +141,30 @@ HOA Board</pre>
     <footer class="container" style="padding:24px;color:#64748b;border-top:1px solid var(--border);margin-top:24px">© HOAWriterAI — Professional Communication for HOAs</footer>
 
     <script>
+      function getTemplates(){ try{ return JSON.parse(localStorage.getItem('hoa_templates')||'[]'); }catch{ return []; } }
+      function populateTplSelect(){ const sel=document.getElementById('tplSelect'); if(!sel) return; const tpls=getTemplates(); while(sel.options.length>1){ sel.remove(1);} tpls.forEach((t,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=t.name||`Template ${i+1}`; sel.appendChild(o); }); }
+      function collect(){
+        return {
+          recipient: document.getElementById('recipient').value.trim(),
+          type: document.getElementById('type').value.trim(),
+          details: document.getElementById('details').value.trim(),
+          date: new Date().toLocaleDateString()
+        };
+      }
+      function fillPlaceholders(tpl, values){ return (tpl||'').replace(/\{\{\s*(\w+)\s*\}\}/g,(_,k)=> (values[k]??'')); }
+      function applySelectedTemplate(){
+        const sel=document.getElementById('tplSelect'); if(!sel) return;
+        const idx=sel.value; if(idx===''){ alert('Please select a template'); return; }
+        const tpls=getTemplates(); const tpl=tpls[parseInt(idx,10)]; if(!tpl) return;
+        const values=collect();
+        const today = values.date;
+        const header = `Date: ${today}\n\nDear ${values.recipient || 'Homeowner'},\n\n`;
+        const sign = `\n\nSincerely,\nHOA Board`;
+        const body=fillPlaceholders(tpl.body||'', values);
+        document.getElementById('preview').textContent = (header + body + sign) || 'Template body is empty.';
+      }
+      populateTplSelect();
+      document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);
       function format(type, name, details){
         const today = new Date().toLocaleDateString();
         const header = `Date: ${today}\n\nDear ${name || 'Homeowner'},`;

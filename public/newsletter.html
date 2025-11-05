@@ -49,6 +49,13 @@
       <div class="grid">
         <div class="card" id="demo">
           <h3 style="margin:0 0 10px">Interactive Demo</h3>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:8px">
+            <div>
+              <label for="tplSelect">Use Template</label>
+              <select id="tplSelect"><option value="">-- Select from Templates --</option></select>
+            </div>
+            <button class="btn" id="btnApplyTpl" type="button">Apply Template</button>
+          </div>
           <label for="month">Month</label>
           <input id="month" placeholder="e.g., November 2025" />
           <label for="updates">Community Updates</label>
@@ -125,6 +132,8 @@ Stay connected with your HOA. Reply with questions or ideas!</pre>
     <footer class="container" style="padding:24px;color:#64748b;border-top:1px solid var(--border);margin-top:24px">© HOAWriterAI — Professional Communication for HOAs</footer>
 
     <script>
+      function getTemplates(){ try{ return JSON.parse(localStorage.getItem('hoa_templates')||'[]'); }catch{ return []; } }
+      function populateTplSelect(){ const sel=document.getElementById('tplSelect'); if(!sel) return; const tpls=getTemplates(); while(sel.options.length>1){ sel.remove(1);} tpls.forEach((t,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=t.name||`Template ${i+1}`; sel.appendChild(o); }); }
       function build(values){
         const month = values.month || 'This Month';
         const updates = (values.updates||'').split(/;|\n/).map(s=>s.trim()).filter(Boolean);
@@ -140,6 +149,17 @@ Stay connected with your HOA. Reply with questions or ideas!</pre>
           tips: document.getElementById('tips').value.trim()
         };
       }
+      function fillPlaceholders(tpl, values){ return (tpl||'').replace(/\{\{\s*(\w+)\s*\}\}/g,(_,k)=> (values[k]??'')); }
+      function applySelectedTemplate(){
+        const sel=document.getElementById('tplSelect'); if(!sel) return;
+        const idx=sel.value; if(idx===''){ alert('Please select a template'); return; }
+        const tpls=getTemplates(); const tpl=tpls[parseInt(idx,10)]; if(!tpl) return;
+        const values=collect();
+        const body=fillPlaceholders(tpl.body||'', values);
+        document.getElementById('preview').textContent = body || 'Template body is empty.';
+      }
+      populateTplSelect();
+      document.getElementById('btnApplyTpl').addEventListener('click', applySelectedTemplate);
       document.getElementById('btnGenerate').addEventListener('click', function(){
         document.getElementById('preview').textContent = build(collect());
       });
